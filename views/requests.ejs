@@ -1,0 +1,18 @@
+<% include partials/header %>
+
+<H1>Burn Window Request Page</H1>
+<% var total = requests.length %>
+<a href="\">Home</a></br>
+<p>There are <%=total%> requests in the system</p>
+
+<a href="\request_form">New Burn Request</a>
+<br>
+<br>
+
+<% requests.forEach(function(burn){ %>
+    <li>
+        <%= burn.name%> - <%= burn.request_acres %> acres - <%=burn.submitted_on%>
+    </li>
+<% }) %>
+
+<% include partials/footer %>
