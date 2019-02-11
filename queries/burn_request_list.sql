@@ -1,8 +1,8 @@
-SELECT  requests.burn_id,
-        SUBSTRING(burns.project_name,1,20) AS 'name', 
-        requests.submitted_on,
+SELECT  burns.burn_id,
+        SUBSTRING(burn_projects.project_name,1,20) AS 'name', 
+        burns.submitted_on,
         request_acres
-FROM requests
-LEFT JOIN burns
-ON requests.burn_project_id=burns.burn_project_id
+FROM burns
+LEFT JOIN burn_projects
+ON burns.burn_project_id=burn_projects.burn_project_id
 ORDER BY request_acres DESC;

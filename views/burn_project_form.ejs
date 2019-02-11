@@ -1,0 +1,61 @@
+<% include partials/header %>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-offset-3">
+                <h1>Register a New Burn Project</h1>
+                <form method="post" action="/burn_projects">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            
+                             <div class="form-group">
+                                <label for="project_number">Project number: </label>
+                                <input type="text" id="project_number" class="form-control" name="project_number">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="project_name">Project name: </label>
+                                <input type="text" id="project_name" class="form-control" name="project_name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="project_acres">Acres: </label>
+                                <input type="number" id="project_acres" class="form-control" name="project_acres">
+                            </div>
+                            
+                            <!--<div class="form-group">-->
+                            <!--    <label for="de_minimis">This project (or a portion) is potentially de minimis </label>-->
+                            <!--    <input type="checkbox" id="de_minimis" class="form-control" name="de_minimis">-->
+                            <!--</div>-->
+                            
+                            <!--<div class="form-group">-->
+                            <!--    <label for="major_fbps_fuel">Fuel Model: </label>-->
+                            <!--    <input type="number" id="project_acres" class="form-control" name="project_acres">-->
+                            <!--</div>-->
+                            
+                            <!--  <div class="form-group">-->
+                            <!--    <label for="ignition_method">Ignition Method: </label>-->
+                            <!--    <input type="number" id="ignition_method" class="form-control" name="ignition_method">-->
+                            <!--</div>-->
+                            
+                            <div class="form-group">
+                                <label for="first_burn">Expected start date: </label>
+                                <input type="date" id="first_burn" class="form-control" name="first_burn">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="duration">Expected number of burn days: </label>
+                                <input type="number" id="duration" class="form-control" name="duration">
+                            </div>
+                            
+                            
+                            
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            
+                            <a class="btn btn-secondary" href="/burn_projects" role="button">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<% include partials/footer %>
