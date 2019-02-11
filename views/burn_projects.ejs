@@ -1,18 +1,32 @@
 <% include partials/header %>
+<div class="container">
+    <header class="jumbotron">
+        <div class="container">
+            <H1>Burn Registration Page</H1>
+            <% var total = burns.length %>
+            <p>There are <%=total%> burn projects in the system</p>
+            <p>
+            <a class="btn btn-primary btn-lg" href="\burn_projects\new">Register New Burn</a>
+            <a class="btn btn-primary btn-lg" href="\">Home</a><br>
+            </p>
+        </div>
+    </header>
 
-<H1>Burn Registration Page</H1>
-<% var total = burns.length %>
-<a href="\">Home</a><br>
-<p>There are <%=total%> burn projects in the system</p>
-
-<a href="\burn_project_form">Register New Burn</a>
-<br>
-<br>
-
-<% burns.forEach(function(burn){ %>
-    <li>
-        <%= burn.name%> - <%= burn.project_acres %> acres - <%=burn.submitted_by%>
-    </li>
-<% }) %>
+    <div class="col-lg-12">
+        <h3>Registered burn projects</h3>
+    </div>
+    
+    <div class="row">
+        <% burns.forEach(function(burn){ %>
+            <div class="col-md-3 col-sm-6">
+                
+                <li>
+                    <%= burn.name%> - <%= burn.project_acres %> acres - <%=burn.submitted_on%>
+                </li>
+        
+            </div>
+        <% }) %>
+    </div>
+</div>
 
 <% include partials/footer %>

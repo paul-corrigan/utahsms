@@ -24,6 +24,8 @@ var db = mysql.createConnection({
 // using this to read the .sql query files into a variable
 var fs = require('fs');
 
+//date handling to make SQL inserts and selects easier
+var moment = require('moment');
 
 //connect additional directories to serve css stylesheets etc.
 app.use(express.static("public"));
@@ -63,14 +65,22 @@ app.get("/burn_projects", function(req, res){
 // REGISTER A NEW BURN PROJECT
 
 // burn form route (create only at the moment)
-app.get("/burn_project_form", function(req, res){
+app.get("/burn_projects/new", function(req, res){
 
 //directs to the new request form
     res.render("burn_project_form");
 });
 
-//posts a submitted burn project form to the db
+
+
+// GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
 app.post("/burn_projects", function(req, res){
+
+  //right now can't get the moment.js library to work, the following two lines 
+  //use native js to create a mySQL date for insertion into the db  
+  var d = new Date();
+  var localDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
+  
   var newReq = {
         
         project_number: req.body.project_number,
@@ -81,11 +91,13 @@ app.post("/burn_projects", function(req, res){
         // ignition_method:req.body.ignition_method,
         first_burn:     req.body.first_burn,
         duration:       req.body.duration,
-        submitted_on:   Date.now(),
+        submitted_on:   localDate
     };
     
     var end_result = db.query('INSERT INTO burn_projects SET?', newReq, function(err, result) {
     if (err) throw err;
+    
+    //redirect back to burn project page
     res.redirect("/burn_projects");
   });
 });
@@ -125,7 +137,7 @@ app.post("/requests", function(req, res){
         request_acres:  req.body.size,
         start_date:     req.body.start_date,
         end_date:       req.body.end_date,
-        submitted_on:   Date.now(),
+        submitted_on:   Date.now()
     };
     
     var end_result = db.query('INSERT INTO burns SET?', newReq, function(err, result) {
