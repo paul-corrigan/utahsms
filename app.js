@@ -36,15 +36,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 //tell express to assume .ejs extension to render route template files
 app.set("view engine", "ejs");
 
-// HOME
-// the root route
+// HOME PAGE
+
 app.get("/", function(req, res){
 
     res.render("home");
 
 });
 
-// LIST REGISTERED BURNS 
+// INDEX OF REGISTERED BURNS 
 app.get("/burn_projects", function(req, res){
  
     //read the query file into variable called data
@@ -62,7 +62,7 @@ app.get("/burn_projects", function(req, res){
 });
 
 
-// REGISTER A NEW BURN PROJECT
+// NEW BURN PROJECT FORM
 
 // burn form route (create only at the moment)
 app.get("/burn_projects/new", function(req, res){
@@ -73,6 +73,7 @@ app.get("/burn_projects/new", function(req, res){
 
 
 
+// CREATE NEW BURN PROJECT
 // GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
 app.post("/burn_projects", function(req, res){
 
@@ -102,8 +103,31 @@ app.post("/burn_projects", function(req, res){
   });
 });
 
+// SHOW a specific burn project
+app.get("/burn_projects/:id", function(req, res) {
+    // Find the burn project with provided ID
+    //read the query file into variable called data
+    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, base) {  
+      if (err) throw err;
+    
+      var query = base.concat(req.params.id);
+    
+    // query the db return variable results
+      db.query(query, function (error, foundBurn) {
+        if (error) throw error;
+        
+        //if no error pass the result and render the burn request details.ejs template
+        res.render("burn_project_details", {burn: foundBurn})
+      });
+    });
+})
 
-// LIST BURN REQUESTS
+
+
+
+
+
+// INDEX BURN REQUESTS
 
 app.get("/requests", function(req, res){
  
