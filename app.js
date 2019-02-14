@@ -12,6 +12,10 @@ var mysql = require('mysql');
 //easy way to verify query results, print the table to the console
 var cTable = require('console.table');
 
+// should move db credentials to a .env and include .env in a .gitignore
+require('dotenv').config();
+
+
 // connect to the database.  in c9 also need to start the sql server by
 // typing mysql-ctl start in the command line of the console.  
 var db = mysql.createConnection({
@@ -84,15 +88,16 @@ app.post("/burn_projects", function(req, res){
   
   var newReq = {
         
-        project_number: req.body.project_number,
         project_name:   req.body.project_name,
         project_acres:  req.body.project_acres,
-        // de_minimis:     req.body.de_minimis,
-        // major_fbps_fuel:req.body.fuel,
-        // ignition_method:req.body.ignition_method,
-        first_burn:     req.body.first_burn,
+        agency_id:      req.body.agency_id,
+        submitted_by:   req.body.submitted_by,
+        submitted_on:   localDate,
+        county:         req.body.county_id,
+        elevation_low:  req.body.elevation_low,
+        elevation_high: req.body.elevation_high,
         duration:       req.body.duration,
-        submitted_on:   localDate
+        major_fbps_fuel:req.body.major_fbps_fuel,
     };
     
     var end_result = db.query('INSERT INTO burn_projects SET?', newReq, function(err, result) {
@@ -103,24 +108,37 @@ app.post("/burn_projects", function(req, res){
   });
 });
 
-// SHOW a specific burn project
+// SHOW a specific burn project and it's reviews
 app.get("/burn_projects/:id", function(req, res) {
     // Find the burn project with provided ID
-    //read the query file into variable called data
-    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, base) {  
+    
+    //load the generic query to see all burn project details
+    
+    //This nesting of functions is needed because of the asynchronous node.js
+    
+    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, projectquery) {  
       if (err) throw err;
-    
-      var query = base.concat(req.params.id);
-    
-    // query the db return variable results
-      db.query(query, function (error, foundBurn) {
-        if (error) throw error;
+      
+      fs.readFile('queries/burn_project_reviews.sql', 'utf8', function(err, reviewquery) {  
+        if (err) throw err;
         
-        //if no error pass the result and render the burn request details.ejs template
-        res.render("burn_project_details", {burn: foundBurn})
+        // query the db for burn request details and return array foundBurn
+        db.query(projectquery, req.params.id, function (error, foundBurn) {
+          if (error) throw error;
+     
+          // query the db for reviewer comments and return array reviews
+          db.query(reviewquery, req.params.id, function (error, reviews) {
+            if (error) throw error;
+            
+            
+            //if no error pass the result and render the burn request details.ejs template
+            res.render("burn_project_details", {burn: foundBurn, reviews:reviews});
+          });
+            
+        });
       });
     });
-})
+});
 
 
 

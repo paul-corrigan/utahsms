@@ -16,4 +16,4 @@ JOIN agencies
 ON agencies.agency_id=burn_projects.agency_id
 JOIN counties
 ON counties.county_id=burn_projects.county
-WHERE burn_project_id=
+WHERE burn_project_id= ?
