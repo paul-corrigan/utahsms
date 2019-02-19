@@ -19,12 +19,12 @@ require('dotenv').config();
 // connect to the database.  in c9 also need to start the sql server by
 // typing mysql-ctl start in the command line of the console.  
 var db = mysql.createConnection({
-  host : 'localhost',
-  user : 'pcorrigan',
-  database: 'utahsms'
+  host : process.env.DB_HOST,
+  user : process.env.DB_USER,
+  database: process.env.DB_NAME
 });
 
-// fs is the native node API for interacting with a file system
+// fs is a node library for interacting with a file system
 // using this to read the .sql query files into a variable
 var fs = require('fs');
 
