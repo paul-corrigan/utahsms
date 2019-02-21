@@ -1,4 +1,4 @@
-<% include partials/header %>
+<% include ../partials/header %>
 
 
 
@@ -9,7 +9,7 @@
             <% var total = burns.length %>
             <p>There are <%=total%> burn projects in the system</p>
             <p>
-            <a class="btn btn-outline-secondary btn-lg" href="\burn_projects\new">Register New Burn</a>
+            <a class="btn btn-outline-secondary btn-lg" href="/projects/new">Register New Burn</a>
             </p>
         </div>
     </header>
@@ -31,8 +31,7 @@
             
             <% burns.forEach(function(burn, i){ %>
                 <tr>
-                    <td scope="row"><a href="/burn_projects/<%=burn.burn_project_id%>" class="btn btn-primary btn-sm">View</a></td>
-                    <td scope="row"><%= burn.name%></td>
+                    <td scope="row"><a href="/projects/<%=burn.burn_project_id%>"><%= burn.name%></a></td>
                     <td scope="row"><%= burn.project_acres%></td>
                     <td scope="row"><%= burn.submitted_on%></td>
                 </tr>        
@@ -45,4 +44,4 @@
     
 </div>
 
-<% include partials/footer %>
+<% include ../partials/footer %>

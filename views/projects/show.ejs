@@ -1,4 +1,4 @@
-<% include partials/header %>
+<% include ../partials/header %>
 
 
 
@@ -12,14 +12,14 @@
         <div class="col-md-3">
             <p class="lead"><%=burn[0].project_name%></p>
             <div class="list-group">
-                <li class="list-group-item"><%=burn[0].agency%></li>
-                <a class="btn btn-primary btn-lg" href="\burn_projects\">Back to list</a>
+                <a class="btn btn-primary btn-lg" href="/projects">Back to list</a>
             </div>
         </div>
         
         <div class="col-md-9">
             <p>Acres: <%=burn[0].project_acres%></p>
             <p>Submitted by: <%=burn[0].submitter%></p>
+            <p>Agency: <%=burn[0].agency%></p>
             <p>On: <%=burn[0].submitted_on%></p>
             <p>County: <%=burn[0].county%></p>
             <p>Low Elevation: <%=burn[0].elevation_low%></p>
@@ -43,4 +43,4 @@
         
 </div>
 
-<% include partials/footer %>
+<% include ../partials/footer %>
