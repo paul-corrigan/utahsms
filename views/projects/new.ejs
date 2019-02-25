@@ -1,78 +1,76 @@
 <% include ../partials/header %>
+    
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-offset-3">
-                <h1>Register a New Burn Project</h1>
+                
+                <H1>Register a new burn</H1>
                 <form method="post" action="/projects">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             
-                            <div class="form-group">
-                                <label for="project_name">Project name: </label>
-                                <input type="text" id="project_name" class="form-control" name="project_name">
+                            <div class="d-flex justify-content-between">
+                                <div class="form-group">
+                                    <label for="project_name">Project name: </label>
+                                    <input type="text" id="project_name" class="form-control" name="project_name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="project_acres">  Acres: </label>
+                                    <input type="number" id="project_acres" class="form-control" name="project_acres">
+                                </div>
+                                <div class="form-group">
+                                    <label for="burn_type">Burn Type</label>
+                                    <select id="burn_type" name="burn_type">
+                                        <option value=1>Broadcast</option>
+                                        <option value=5>Piles</option>
+                                    </select>
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="project_acres">Acres: </label>
-                                <input type="number" id="project_acres" class="form-control" name="project_acres">
-                            </div>
-                            
-                            <!--<div class="form-group">-->
-                            <!--    <label for="submitted_by">Your id </label>-->
-                            <!--    <input type="number" id="submitted_by" class="form-control" name="submitted_by">-->
-                            <!--</div>-->
                             
                             <div class="d-flex justify-content-around">
                                 <div class="form-group">
                                     <label for="agency_id">Agency</label>    
                                     <select id="agency_id" name="agency_id">
-                                        <option value="2">BLM</option>
-                                        <option value="3">USFS</option>
-                                        <option value="4">USFWS</option>
-                                        <option value="5">NPS</option>
-                                        <option value="6">State</option>
-                                        <option value="7">BIA</option>
+                                        <% agencies.forEach(function(agency, i){ %>
+                                        <option value="<%=agency.number%>"><%=agency.name%></option>
+                                        <% }) %>
                                     </select>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="county">County</label>    
                                     <select id="county" name="county_id">
-                                        <option value="1">Beaver     </option>
-                                        <option value="2">Box Elder  </option>
-                                        <option value="3">Cache      </option>
-                                        <option value="4">Carbon     </option>
-                                        <option value="5">Daggett    </option>
-                                        <option value="6">Davis      </option>
-                                        <option value="7">Duchesne   </option>
-                                        <option value="8">Emery      </option>
-                                        <option value="9">Garfield   </option>
-                                        <option value="10">Grand      </option>
-                                        <option value="11">Iron       </option>
-                                        <option value="12">Juab       </option>
-                                        <option value="13">Kane       </option>
-                                        <option value="14">Millard    </option>
-                                        <option value="15">Morgan     </option>
-                                        <option value="16">Piute      </option>
-                                        <option value="17">Rich       </option>
-                                        <option value="18">Salt Lake  </option>
-                                        <option value="19">San Juan   </option>
-                                        <option value="20">Sanpete    </option>
-                                        <option value="21">Sevier     </option>
-                                        <option value="22">Summit     </option>
-                                        <option value="23">Tooele     </option>
-                                        <option value="24">Uintah     </option>
-                                        <option value="25">Utah       </option>
-                                        <option value="26">Wasatch    </option>
-                                        <option value="27">Washington </option>
-                                        <option value="28">Wayne      </option>
-                                        <option value="29">Weber      </option>    
+                                        <% counties.forEach(function(county, i){ %>
+                                        <option value="<%=county.number%>"><%=county.name%></option>
+                                        <% }) %>   
                                     </select>
                                  </div>
                             </div>
                             
+                            <div class="d-flex justify-content-around">
+                                <div class="form-group">
+                                    <label for="fuel_model">Main Fuel Model</label>    
+                                    <select id="fuel_model" name="major_fbps_fuel">
+                                        <% fuelmods.forEach(function(model, i){ %>
+                                            <option value="<%=model.number%>"><%=model.name%></option>
+                                            <% }) %>   
+                                    </select>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <!--<p>Airsheds 1-15 below 6500 feet. Airshed 16 is all of Utah 6500' and over</p>-->
+                                    <label for="airshed_id">Airshed</label>    
+                                    <select id="airshed_id" name="airshed_id">
+                                        <% airsheds.forEach(function(airshed, i){ %>
+                                            <option value="<%=airshed.number%>"><%=airshed.name%></option>
+                                            <% }) %>   
+                                    </select>
+                                </div>
+                            
+                            </div>
+                            
                             <hr>
-                            <p>Burn is </p>    
+                            <p class="section-head">Burn is </p>    
                             <div class="d-flex justify-content-between checkboxes">
                                 
                                 <label for ="de_minimis"><span>De Minimis:  </span></label>
@@ -87,66 +85,59 @@
                             </div>
                             <hr>
                             
-                             <div class="form-group">
-                                <label for="elevation_low">Lowest Elevation: </label>
-                                <input type="number" id="elevation_low" class="form-control" name="elevation_low">
+                            <div class="d-flex justify-content-around">
+                                
+                                <div class="form-group">
+                                    <label for="elevation_low">Lowest Elevation: </label>
+                                    <input type="number" id="elevation_low" class="form-control" name="elevation_low">
+                                </div>
+                                
+                                 <div class="form-group">
+                                    <label for="elevation_high">Highest Elevation: </label>
+                                    <input type="number" id="elevation_high" class="form-control" name="elevation_high">
+                                </div>
                             </div>
                             
-                             <div class="form-group">
-                                <label for="elevation_high">Highest Elevation: </label>
-                                <input type="number" id="elevation_high" class="form-control" name="elevation_high">
+                            <div class="d-flex justify-content-around">
+                            
+                                <div class="form-group">
+                                    <label for="duration">Expected number of burn days: </label>
+                                    <input type="number" id="duration" class="form-control" name="duration">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pm_max">Maximum tons PM10 expected: </label>
+                                    <input type="number" id="pm-max" class="form-control" name="pm_max">
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="duration">Expected number of burn days: </label>
-                                <input type="number" id="duration" class="form-control" name="duration">
-                            </div>
+                                
                             
-                            <div class="form-group">
-                                <label for="fuel_model">Dominant Fuel Model</label>    
-                                <select id="fuel_model" name="major_fbps_fuel">
-                                    <option value="1">1 Short Grass</option>
-                                    <option value="2">2 Timber Understory</option>
-                                    <option value="3">3 Tall Grass</option>
-                                    <option value="4">4 Chaparral</option>
-                                    <option value="5">5 Shrub</option>
-                                    <option value="6">6 Dormant Brush</option>
-                                    <option value="7">7 Southern Rough</option>
-                                    <option value="8">8 Closed Timber Litter</option>
-                                    <option value="9">9 Hardwood Litter</option>
-                                    <option value="10">10 Timber</option>
-                                    <option value="11">11 Light Slash</option>
-                                    <option value="12">12 Moderate Slash</option>
-                                    <option value="13">13 Heavy Slash</option>
-                                </select>
-                            </div>
                             
-                            <div class="form-group">
-                                <!--<p>Airsheds 1-15 below 6500 feet. Airshed 16 is all of Utah 6500' and over</p>-->
-                                <label for="airshed_id">Airshed</label>    
-                                <select id="airshed_id" name="airshed_id">
-                                    <option value="1">1 N West Desert</option>
-                                    <option value="2">2 S West Desert</option>
-                                    <option value="3">3 Virgin R</option>
-                                    <option value="4">4 Cache/Bear R</option>
-                                    <option value="5">5 N Wasatch Front</option>
-                                    <option value="6">6 Wasatch Back</option>
-                                    <option value="7">7 N Slope Uintas</option>
-                                    <option value="8">8 S Wasatch Front</option>
-                                    <option value="9">9 Uinta Basin</option>
-                                    <option value="10">10 San Pitch R</option>
-                                    <option value="11">11 Book Cliffs</option>
-                                    <option value="12">12 Upper Colo R</option>
-                                    <option value="13">13 Sevier R</option>
-                                    <option value="14">14 Lower Colo R</option>
-                                    <option value="15">15 San Juan R</option>
-                                    <option value="16">16 6500' Plus</option>
-                                </select>
+                            
+                            <div class="d-flex justify-content-around">
+                                <div class="form-group">
+                                        <label for="ignition_method">Ignition Method</label>    
+                                        <select id="ignition_method" name="ignition_method">
+                                            <% methods.forEach(function(method, i){ %>
+                                            <option value="<%=method.number%>"><%=method.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                        <label for="ert">Emissions Reduction Technique</label>    
+                                        <select id="ert" name="ert">
+                                            <% erts.forEach(function(ert, i){ %>
+                                            <option value="<%=ert.number%>"><%=ert.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="pm_max">Maximum tons PM10 expected: </label>
-                                <input type="number" id="pm-max" class="form-control" name="pm_max">
+                                <label for "first_burn">Earliest Burn Date: </label>
+                                <input type="date" class="form_control" name="first_burn">
                             </div>
                             
                             <div class="d-flex justify-content-between">
@@ -156,6 +147,9 @@
                                 </div>
                                 <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
                             </div>
+                            
+                            <hr>
+                            <br>
                         </div>
                     </div>
                 </form>

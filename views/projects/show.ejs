@@ -13,6 +13,8 @@
             <p class="lead"><%=burn[0].project_name%></p>
             <div class="list-group">
                 <a class="btn btn-primary btn-lg" href="/projects">Back to list</a>
+                <br>
+                <a class="btn btn-warning btn-lg" href="/projects/<%=burn[0].burn_project_id%>/edit">Edit</a>
             </div>
         </div>
         
@@ -22,10 +24,34 @@
             <p>Agency: <%=burn[0].agency%></p>
             <p>On: <%=burn[0].submitted_on%></p>
             <p>County: <%=burn[0].county%></p>
+            <p>Burn type: <%=burn[0].type%></p>
             <p>Low Elevation: <%=burn[0].elevation_low%></p>
             <p>High Elevation: <%=burn[0].elevation_high%></p>
             <p>Duration (days): <%=burn[0].duration%></p>
             <p>Fuel Model: <%=burn[0].fuel_model%></p>
+            <p>Earliest date: <%=burn[0].first_burn%></p>
+            <p>Ignition method: <%=burn[0].method%></p>
+            <!--Logic to show the tinyint booleans -->
+            
+            <%if(burn[0].class_1 === 0) {%>
+                <p>Class 1: No</p>
+            <%} else { %>
+                <p>Class 1: Yes</p>
+            <% } %>
+           
+            <%if(burn[0].de_minimis === 0) {%>
+                <p>De_minimis: No</p>
+            <%} else { %>
+                <p>De_minimis: Yes</p>
+            <% } %>
+            
+            <%if(burn[0].non_attainment === 0) {%>
+                <p>Non_attainment: No</p>
+            <%} else { %>
+                <p>Non_attainment: Yes</p>
+            <% } %>
+
+            <!--Iterate through the reviews            -->
             <hr>
             <p><strong>Reviews</strong></p>
             <% reviews.forEach(function(review, i){ %>

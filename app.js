@@ -31,6 +31,12 @@ var fs = require('fs');
 //date handling to make SQL inserts and selects easier
 var moment = require('moment');
 
+//method-override allows put and delete request HTTP routing, not supported by HTML
+var methodOverride = require('method-override');
+
+//tells the app to look for type HTTP request appended after _method
+app.use(methodOverride("_method"));
+
 //connect additional directories to serve css stylesheets etc.
 app.use(express.static("public"));
 
@@ -52,7 +58,7 @@ app.get("/", function(req, res){
 app.get("/projects", function(req, res){
  
     //read the query file into variable called data
-    fs.readFile('queries/burn_project_list.sql', 'utf8', function(err, data) {  
+    fs.readFile('queries/burn_project_index.sql', 'utf8', function(err, data) {  
       if (err) throw err;
       
       // if no error query the db return variable results
@@ -70,9 +76,32 @@ app.get("/projects", function(req, res){
 
 // burn form route (create only at the moment)
 app.get("/projects/new", function(req, res){
-
-//directs to the new request form
-    res.render("./projects/new");
+  //these nested callbacks load various numbers and names to fill dropdowns
+  db.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC', function (error, erts) {
+    if (error) throw error;
+    console.log(erts);
+    db.query('SELECT county_id AS number, name FROM counties', function (error, counties) {
+      if (error) throw error;
+      console.log(counties);
+      db.query('SELECT ignition_method_id AS number, name FROM ignition_methods', function(error, methods) {
+        if (error) throw error;
+        console.log(methods);
+        db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
+          if (error) throw error;
+          console.log(agencies[0].number);
+          db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
+            if (error) throw error;
+            console.log(fuelmods);  
+            db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
+              if (error) throw error;
+              console.log(airsheds);  
+              res.render("./projects/new", {erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds});
+            });
+          });
+        });  
+      });
+    });
+  });
 });
 
 
@@ -85,7 +114,7 @@ app.post("/projects", function(req, res){
   if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
   if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
   if (req.body.class_1        === undefined) {req.body.class_1  = 0};
-  
+  console.log(req.body.ignition_method);
   //right now can't get the moment.js library to work, the following two lines 
   //use native js to create a mySQL date for insertion into the db  
   var d = new Date();
@@ -94,20 +123,24 @@ app.post("/projects", function(req, res){
   // build an object to insert into burn_projects from form data
   var newProject = {
         
-        project_name:   req.body.project_name,
-        project_acres:  req.body.project_acres,
         agency_id:      req.body.agency_id,
         submitted_by:   55,
         submitted_on:   sqlDate,
+        project_name:   req.body.project_name,
         airshed_id:     req.body.airshed_id,
         class_1:        req.body.class_1,
         non_attainment: req.body.non_attainment,
         de_minimis:     req.body.de_minimis,
-        county:         req.body.county_id,
+        project_acres:  req.body.project_acres,
         elevation_low:  req.body.elevation_low,
         elevation_high: req.body.elevation_high,
+        major_fbps_fuel:req.body.major_fbps_fuel,
+        first_burn:     req.body.first_burn,
         duration:       req.body.duration,
-        major_fbps_fuel:req.body.major_fbps_fuel
+        ignition_method:req.body.ignition_method,
+        county:         req.body.county_id,
+        burn_type:      req.body.burn_type
+        
     };
   
   var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
@@ -150,7 +183,7 @@ app.get("/projects/:id", function(req, res) {
     
     //This nesting of functions is needed because of the asynchronous node.js
     
-    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, projectquery) {  
+    fs.readFile('queries/burn_project_show.sql', 'utf8', function(err, projectquery) {  
       if (err) throw err;
       
       fs.readFile('queries/burn_project_reviews.sql', 'utf8', function(err, reviewquery) {  
@@ -180,11 +213,83 @@ app.get("/projects/:id", function(req, res) {
 
 //  EDIT a burn project
 app.get("/projects/:id/edit", function(req, res) {
-    res.render("./projects/edit");
-    
-})
+  fs.readFile('queries/burn_project_show.sql', 'utf8', function(err, projectquery) {  
+    if (err) throw err;
+    // query the db for burn request details and return array foundBurn
+    db.query(projectquery, req.params.id, function (error, foundBurn) {
+      
+      if (error) throw error;
+      if (foundBurn[0] === undefined) {
+        console.log('No such burn exists');
+        res.redirect("/projects");
+      } else {
+        db.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC', function (error, erts) {
+          if (error) throw error;
+          db.query('SELECT county_id AS number, name FROM counties', function (error, counties) {
+            if (error) throw error;
+            db.query('SELECT ignition_method_id AS number, name FROM ignition_methods', function(error, methods) {
+              if (error) throw error;
+              db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
+                if (error) throw error;
+                db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
+                  if (error) throw error;
+                  db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
+                    // right now the first_burn (date) cannot be rendered in the template because it is in the format 2016-11-14T00:00:00.000Z
+                    // var fulldate = foundBurn[0].first_burn;
+                    // console.log(fulldate);
+                    if (error) throw error;
+                    res.render("./projects/edit", {burn:foundBurn, erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds});
+                  });
+                });
+              });
+            });
+          });
+        });
+      };
+    });
+  });  
+});
 
-
+// UPDATE BURN PROJECT
+app.put("/projects/:id", function(req, res){
+  //Logic to make boolean checkboxes work  
+  if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
+  if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
+  if (req.body.class_1        === undefined) {req.body.class_1  = 0};
+  //right now can't get the moment.js library to work, the following two lines 
+  //use native js to create a mySQL date for insertion into the db  
+  var d = new Date();
+  var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
+  
+  // build an object to update burn_projects from form data
+  var updateProject = {
+        
+        agency_id:      req.body.agency_id,
+        submitted_by:   55, //will implement user auth here
+        submitted_on:   sqlDate,
+        project_name:   req.body.project_name,
+        airshed_id:     req.body.airshed_id,
+        class_1:        req.body.class_1,
+        non_attainment: req.body.non_attainment,
+        de_minimis:     req.body.de_minimis,
+        project_acres:  req.body.project_acres,
+        elevation_low:  req.body.elevation_low,
+        elevation_high: req.body.elevation_high,
+        major_fbps_fuel:req.body.major_fbps_fuel,
+        first_burn:     req.body.first_burn,
+        duration:       req.body.duration,
+        ignition_method:req.body.ignition_method,
+        county:         req.body.county_id,
+        burn_type:      req.body.burn_type
+        
+    };
+  
+  var insert1 = db.query('UPDATE burn_projects SET project_acres=? WHERE burn_project_id=?', [req.body.project_acres, req.params.id], function(err, result) {
+    if (err) {throw err;} else {
+      res.redirect("/projects/" + req.params.id);
+    }
+  });
+});
 
 
 // INDEX BURN REQUESTS
