@@ -6,6 +6,9 @@ var bodyParser = require("body-parser");
 
 var app = express();
 
+// sanitize scripts etc. from user input
+var expressSanitizer = require("express-sanitizer");
+
 //node framework to interface with mysql
 var mysql = require('mysql');
 
@@ -34,8 +37,8 @@ var moment = require('moment');
 //method-override allows put and delete request HTTP routing, not supported by HTML
 var methodOverride = require('method-override');
 
-//tells the app to look for type HTTP request appended after _method
-app.use(methodOverride("_method"));
+//tell express to assume .ejs extension to render route template files
+app.set("view engine", "ejs");
 
 //connect additional directories to serve css stylesheets etc.
 app.use(express.static("public"));
@@ -43,8 +46,11 @@ app.use(express.static("public"));
 //need to activate bodyparser
 app.use(bodyParser.urlencoded({extended: true}));
 
-//tell express to assume .ejs extension to render route template files
-app.set("view engine", "ejs");
+//express-sanitizer goes after bodyparser
+app.use(expressSanitizer());
+
+//tells the app to look for type HTTP request appended after _method
+app.use(methodOverride("_method"));
 
 // HOME PAGE
 
@@ -64,9 +70,9 @@ app.get("/projects", function(req, res){
       // if no error query the db return variable results
       db.query(data, function (error, results) {
         if (error) throw error;
-        
+        var mSubmit = moment
         //if no error pass the result and render the burn request.ejs template
-        res.render("./projects/index.ejs", {burns: results});
+        res.render("./projects/index.ejs", {burns: results, moment:moment});
       });
     });
 });
@@ -110,13 +116,15 @@ app.get("/projects/new", function(req, res){
 // GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
 app.post("/projects", function(req, res){
   
+  //take any script tags out of text fields
+  req.body.project_name = req.sanitize(req.body.project_name);
+  
   //Logic to make boolean checkboxes work  
   if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
   if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
   if (req.body.class_1        === undefined) {req.body.class_1  = 0};
-  console.log(req.body.ignition_method);
-  //right now can't get the moment.js library to work, the following two lines 
-  //use native js to create a mySQL date for insertion into the db  
+  
+  //use js to create current SQL timestamp for insertion into the db  
   var d = new Date();
   var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
   
@@ -124,7 +132,7 @@ app.post("/projects", function(req, res){
   var newProject = {
         
         agency_id:      req.body.agency_id,
-        submitted_by:   55,
+        submitted_by:   55, //user auth here
         submitted_on:   sqlDate,
         project_name:   req.body.project_name,
         airshed_id:     req.body.airshed_id,
@@ -202,8 +210,8 @@ app.get("/projects/:id", function(req, res) {
               if (error) throw error;
               
               
-              //if no error pass the result and render the burn request details.ejs template
-              res.render("./projects/show", {burn: foundBurn, reviews:reviews});
+              //if no error pass the burn details, reviews, and momentjs to the ejs template
+              res.render("./projects/show", {burn: foundBurn, reviews:reviews, moment: moment});
             });
           };  
         });
@@ -234,11 +242,11 @@ app.get("/projects/:id/edit", function(req, res) {
                 db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
                   if (error) throw error;
                   db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
-                    // right now the first_burn (date) cannot be rendered in the template because it is in the format 2016-11-14T00:00:00.000Z
-                    // var fulldate = foundBurn[0].first_burn;
-                    // console.log(fulldate);
+                    // handling for SQL date to pass to template so it works in HTML date input type
+                    var momentDate = moment(foundBurn[0].first_burn);
+                    var truncDate = momentDate.format("YYYY-MM-DD");
                     if (error) throw error;
-                    res.render("./projects/edit", {burn:foundBurn, erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds});
+                    res.render("./projects/edit", {burn:foundBurn, erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds, date:truncDate});
                   });
                 });
               });
@@ -252,42 +260,63 @@ app.get("/projects/:id/edit", function(req, res) {
 
 // UPDATE BURN PROJECT
 app.put("/projects/:id", function(req, res){
+  
+  //take any script tags out of text fields
+  req.body.project_name = req.sanitize(req.body.project_name);
+  
   //Logic to make boolean checkboxes work  
   if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
   if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
   if (req.body.class_1        === undefined) {req.body.class_1  = 0};
-  //right now can't get the moment.js library to work, the following two lines 
+  if (req.body.de_minimis     === 'on') {req.body.de_minimis = 1};
+  if (req.body.non_attainment === 'on') {req.body.non_attainment  = 1};
+  if (req.body.class_1        === 'on') {req.body.class_1  = 1};
+  
   //use native js to create a mySQL date for insertion into the db  
   var d = new Date();
   var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
   
-  // build an object to update burn_projects from form data
-  var updateProject = {
-        
-        agency_id:      req.body.agency_id,
-        submitted_by:   55, //will implement user auth here
-        submitted_on:   sqlDate,
-        project_name:   req.body.project_name,
-        airshed_id:     req.body.airshed_id,
-        class_1:        req.body.class_1,
-        non_attainment: req.body.non_attainment,
-        de_minimis:     req.body.de_minimis,
-        project_acres:  req.body.project_acres,
-        elevation_low:  req.body.elevation_low,
-        elevation_high: req.body.elevation_high,
-        major_fbps_fuel:req.body.major_fbps_fuel,
-        first_burn:     req.body.first_burn,
-        duration:       req.body.duration,
-        ignition_method:req.body.ignition_method,
-        county:         req.body.county_id,
-        burn_type:      req.body.burn_type
-        
-    };
-  
-  var insert1 = db.query('UPDATE burn_projects SET project_acres=? WHERE burn_project_id=?', [req.body.project_acres, req.params.id], function(err, result) {
+  // build an ARRAY to UPDATE burn_projects from form data
+  // Couldn't figure out how to use an object due to the 
+  // need to incorporate req.params.id in the WHERE clause
+  var updateArray = [
+        req.body.project_acres,
+        req.body.project_name,
+        req.body.elevation_high,
+        req.body.elevation_low,
+        req.body.duration,
+        req.body.agency_id,
+        // //implement user auth here
+        req.body.airshed_id,
+        req.body.class_1,
+        req.body.non_attainment,
+        req.body.de_minimis,
+        req.body.major_fbps_fuel,
+        req.body.first_burn,
+        req.body.ignition_method,
+        req.body.county_id,
+        req.body.burn_type,
+        sqlDate,
+        req.params.id
+        ];
+  fs.readFile('queries/burn_project_update.sql', 'utf8', function(err, updateQuery) {  
+      if (err) throw err;
+      db.query(updateQuery, updateArray, function(err, result) {
+        if (err) {throw err;} else {
+          res.redirect("/projects/" + req.params.id);
+        }
+      });
+    
+  });
+});
+
+// DELETE BURN PROJECT
+app.delete("/projects/:id", function(req, res){
+  //
+  db.query('DELETE FROM burn_projects WHERE burn_project_id=?', req.params.id, function(err, result) {
     if (err) {throw err;} else {
-      res.redirect("/projects/" + req.params.id);
-    }
+        res.redirect("/projects/");
+    };
   });
 });
 

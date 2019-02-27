@@ -21,8 +21,9 @@
                                 <div class="form-group">
                                     <label for="burn_type">Burn Type</label>
                                     <select id="burn_type" name="burn_type">
-                                        <option value=1>Broadcast</option>
-                                        <option value=5>Piles</option>
+                                        <!--Deprecate types other than piles and broadcast -->
+                                        <option value=1 <%= burn[0].type != 'Piles' ? 'selected' : ''%>>Broadcast</option>
+                                        <option value=5 <%= burn[0].type == 'Piles' ? 'selected' : ''%>>Piles</option>
                                     </select>
                                 </div>
                             </div>
@@ -30,18 +31,20 @@
                             <div class="d-flex justify-content-around">
                                 <div class="form-group">
                                     <label for="agency_id">Agency</label>    
-                                    <select id="agency_id" name="agency_id" >
-                                        <% agencies.forEach(function(agency, i){ %>
-                                        <option value="<%=agency.number%>"><%=agency.name%></option>
+                                    <select id="agency_id" name="agency_id">
+                                        <% agencies.forEach(function(agency, i){ 
+                                        var selected = ( burn[0].agency == agency.name ) ? "selected" : "";%> 
+                                        <option value="<%=agency.number%>" <%=selected%>><%=agency.name%></option>
                                         <% }) %>
                                     </select>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="county">County</label>    
-                                    <select id="county" name="county_id">
-                                        <% counties.forEach(function(county, i){ %>
-                                        <option value="<%=county.number%>"><%=county.name%></option>
+                                    <select id="county" name="county_id" value="<%=burn[0].county_id%>">
+                                        <% counties.forEach(function(county, i){ 
+                                        var selected = ( burn[0].county == county.name ) ? "selected" : "";%>
+                                        <option value="<%=county.number%>" <%=selected%>><%=county.name%></option>
                                         <% }) %>   
                                     </select>
                                  </div>
@@ -51,8 +54,9 @@
                                 <div class="form-group">
                                     <label for="fuel_model">Main Fuel Model</label>    
                                     <select id="fuel_model" name="major_fbps_fuel">
-                                        <% fuelmods.forEach(function(model, i){ %>
-                                            <option value="<%=model.number%>"><%=model.name%></option>
+                                        <% fuelmods.forEach(function(model, i){ 
+                                            var selected = ( burn[0].fuel_model == model.name ) ? "selected" : "";%>
+                                            <option value="<%=model.number%>" <%=selected%>><%=model.name%></option>
                                             <% }) %>   
                                     </select>
                                 </div>
@@ -61,8 +65,9 @@
                                     <!--<p>Airsheds 1-15 below 6500 feet. Airshed 16 is all of Utah 6500' and over</p>-->
                                     <label for="airshed_id">Airshed</label>    
                                     <select id="airshed_id" name="airshed_id">
-                                        <% airsheds.forEach(function(airshed, i){ %>
-                                            <option value="<%=airshed.number%>"><%=airshed.name%></option>
+                                        <% airsheds.forEach(function(airshed, i){ 
+                                            var selected = ( burn[0].airshed_id == airshed.number ) ? "selected" : "";%>
+                                            <option value="<%=airshed.number%>" <%=selected%>><%=airshed.name%></option>
                                             <% }) %>   
                                     </select>
                                 </div>
@@ -74,13 +79,13 @@
                             <div class="d-flex justify-content-between checkboxes">
                                 
                                 <label for ="de_minimis"><span>De Minimis:  </span></label>
-                                <input type="checkbox" name="de_minimis" value="1" /> 
+                                <input type="checkbox" name="de_minimis" <%= burn[0].de_minimis ? "checked" : "" %> /> 
                                 
                                 <label for ="class_1"><span>Within a class 1 area:  </span></label>
-                                <input type="checkbox" name="class_1" value="1" /> 
+                                <input type="checkbox" name="class_1" <%= burn[0].class_1 ? "checked" : "" %> /> 
                                 
                                 <label for ="non_attainment"><span>Within a non-attainment area:  </span></label>
-                                <input type="checkbox" name="non_attainment" value="1" /> 
+                                <input type="checkbox" name="non_attainment" <%= burn[0].non_attainment ? "checked" : "" %> /> 
                             
                             </div>
                             <hr>
@@ -119,8 +124,9 @@
                                 <div class="form-group">
                                         <label for="ignition_method">Ignition Method</label>    
                                         <select id="ignition_method" name="ignition_method">
-                                            <% methods.forEach(function(method, i){ %>
-                                            <option value="<%=method.number%>"><%=method.name%></option>
+                                            <% methods.forEach(function(method, i){ 
+                                                var selected = ( burn[0].method == method.name ) ? "selected" : "";%>
+                                                <option value="<%=method.number%>" <%=selected%>><%=method.name%></option>
                                             <% }) %>   
                                         </select>
                                 </div>
@@ -137,7 +143,7 @@
                             
                             <div class="form-group">
                                 <label for "first_burn">Earliest Burn Date: </label>
-                                <input type="date" class="form_control" name="first_burn" value="<%=burn[0].first_burn%>">
+                                <input type="date" class="form_control" name="first_burn" value="<%=date%>">
                             </div>
                             
                             <div class="d-flex justify-content-between">

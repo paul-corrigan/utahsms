@@ -12,9 +12,13 @@
         <div class="col-md-3">
             <p class="lead"><%=burn[0].project_name%></p>
             <div class="list-group">
-                <a class="btn btn-primary btn-lg" href="/projects">Back to list</a>
-                <br>
-                <a class="btn btn-warning btn-lg" href="/projects/<%=burn[0].burn_project_id%>/edit">Edit</a>
+                <form method="POST" action="/projects/<%=burn[0].burn_project_id%>?_method=DELETE">
+                    <a class="btn btn-primary btn-lg w-75" href="/projects">Back </a>
+                    <br><br>
+                    <a class="btn btn-warning btn-lg w-75" href="/projects/<%=burn[0].burn_project_id%>/edit">Edit </a>
+                    <br><br>
+                    <button id="delete-button" class="btn btn-danger btn-lg w-75" >Delete</button>
+                </form>
             </div>
         </div>
         
@@ -22,16 +26,25 @@
             <p>Acres: <%=burn[0].project_acres%></p>
             <p>Submitted by: <%=burn[0].submitter%></p>
             <p>Agency: <%=burn[0].agency%></p>
-            <p>On: <%=burn[0].submitted_on%></p>
+            <%  let subTime = burn[0].submitted_on;
+                // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                var sub_date= moment(subTime).subtract(7, 'hours').format('dddd, MMM D YYYY h:ss a');%>
+            <p>On: <%=sub_date%></p>
             <p>County: <%=burn[0].county%></p>
+            <p>Airshed: <%=burn[0].airshed_id%></p>
             <p>Burn type: <%=burn[0].type%></p>
             <p>Low Elevation: <%=burn[0].elevation_low%></p>
             <p>High Elevation: <%=burn[0].elevation_high%></p>
             <p>Duration (days): <%=burn[0].duration%></p>
             <p>Fuel Model: <%=burn[0].fuel_model%></p>
-            <p>Earliest date: <%=burn[0].first_burn%></p>
+            <%  let firstTime = burn[0].first_burn;
+                // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                var first_date= moment(firstTime).subtract(7, 'hours').format('MMMM D YYYY');%>
+            <p>Earliest date: <%=first_date%></p>
+            
             <p>Ignition method: <%=burn[0].method%></p>
-            <!--Logic to show the tinyint booleans -->
+            
+            <!--Logic to show the booleans -->
             
             <%if(burn[0].class_1 === 0) {%>
                 <p>Class 1: No</p>
