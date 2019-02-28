@@ -27,7 +27,7 @@ var db = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
-// fs is a node library for interacting with a file system
+// fs is a node package for interacting with a file system
 // using this to read the .sql query files into a variable
 var fs = require('fs');
 
@@ -36,6 +36,12 @@ var moment = require('moment');
 
 //method-override allows put and delete request HTTP routing, not supported by HTML
 var methodOverride = require('method-override');
+
+//modularize routes to clean up the app.js
+var projectRoutes = require('./routes/projects'),
+    requestRoutes = require('./routes/requests'),
+    userRoutes    = require('./routes/users'),
+    reportRoutes  = require('./routes/reports');
 
 //tell express to assume .ejs extension to render route template files
 app.set("view engine", "ejs");
@@ -85,22 +91,16 @@ app.get("/projects/new", function(req, res){
   //these nested callbacks load various numbers and names to fill dropdowns
   db.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC', function (error, erts) {
     if (error) throw error;
-    console.log(erts);
     db.query('SELECT county_id AS number, name FROM counties', function (error, counties) {
       if (error) throw error;
-      console.log(counties);
       db.query('SELECT ignition_method_id AS number, name FROM ignition_methods', function(error, methods) {
         if (error) throw error;
-        console.log(methods);
         db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
           if (error) throw error;
-          console.log(agencies[0].number);
           db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
             if (error) throw error;
-            console.log(fuelmods);  
             db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
               if (error) throw error;
-              console.log(airsheds);  
               res.render("./projects/new", {erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds});
             });
           });
@@ -131,23 +131,23 @@ app.post("/projects", function(req, res){
   // build an object to insert into burn_projects from form data
   var newProject = {
         
-        agency_id:      req.body.agency_id,
-        submitted_by:   55, //user auth here
-        submitted_on:   sqlDate,
         project_name:   req.body.project_name,
+        submitted_by:   55, //user auth here
+        project_acres:  req.body.project_acres,
+        submitted_on:   sqlDate,
+        agency_id:      req.body.agency_id,
+        elevation_low:  req.body.elevation_low,
+        elevation_high: req.body.elevation_high,
         airshed_id:     req.body.airshed_id,
         class_1:        req.body.class_1,
         non_attainment: req.body.non_attainment,
         de_minimis:     req.body.de_minimis,
-        project_acres:  req.body.project_acres,
-        elevation_low:  req.body.elevation_low,
-        elevation_high: req.body.elevation_high,
-        major_fbps_fuel:req.body.major_fbps_fuel,
-        first_burn:     req.body.first_burn,
         duration:       req.body.duration,
+        first_burn:     req.body.first_burn,
+        burn_type:      req.body.burn_type,
         ignition_method:req.body.ignition_method,
-        county:         req.body.county_id,
-        burn_type:      req.body.burn_type
+        major_fbps_fuel:req.body.major_fbps_fuel,
+        county:         req.body.county_id
         
     };
   

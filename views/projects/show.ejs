@@ -3,14 +3,13 @@
 
 
 <div class="container">
-    <header class="jumbotron">
+    <header class="jumbotron m5">
     <div class="container">
-        <H1>Burn Detail Page</H1>
+            <h2 class="display-4"><%=burn[0].project_name%></h2>
     </div>
     
     <div class="row">
         <div class="col-md-3">
-            <p class="lead"><%=burn[0].project_name%></p>
             <div class="list-group">
                 <form method="POST" action="/projects/<%=burn[0].burn_project_id%>?_method=DELETE">
                     <a class="btn btn-primary btn-lg w-75" href="/projects">Back </a>
@@ -68,8 +67,10 @@
             <hr>
             <p><strong>Reviews</strong></p>
             <% reviews.forEach(function(review, i){ %>
-                        <p>"<%= review.comment%>"</p>
-                        <p>        - <%= review.name%> on <%= review.added_on%></p>
+                        <blockquote class="blockquote">
+                        <p class="mb-0"><%= review.comment%></p>
+                        <footer class="blockquote-footer"><%= review.name%>, <%= moment(review.added_on).subtract(7, 'hours').format('MMM D YYYY');%></footer>
+                        </blockquote>
                         <br>
             <% }) %>
             

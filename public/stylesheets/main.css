@@ -1,6 +1,6 @@
 body {
     background: snow;
-    margin-top:50px;
+    
 }
     
 .checkboxes label {
@@ -13,6 +13,7 @@ body {
   height: 25px;
   padding: 0;
   margin:0;
+  text-align: right;
   vertical-align: bottom;
   position: relative;
   top: -1px;
@@ -23,10 +24,59 @@ body {
   text-align: center;
 }
 
-#project_acres {
-  width: 100px;
-  padding-left: 10px;
+.d-flex {
+  flex-wrap:wrap;
 }
+
+.card-title {
+  text-align: center;
+}
+
+.nav-link {
+  color: gainsboro !important;
+}
+
+.nav-link:hover {
+  color: white !important;
+}
+
+.card {
+  max-width: 50rem;
+  margin: 0 auto; /* Added */
+  float: none; /* Added */
+  margin-bottom: 10px; /* Added */
+  padding-bottom: 3rem;
+  padding-top: 3rem;
+}
+
+/* Remove up-down arrows from Safari and Chrome */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  margin: 0; /* Removes leftover margin */
+}
+
+/*#project_name {*/
+/*  width: 25rem;*/
+/*}*/
+
+select {
+  height: 2.3rem;
+}
+
+.jumbotron {
+  background: snow;
+}
+
+input[type=date] ::-webkit-calendar-picker-indicator {
+    font-size: 5px;
+    margin-left: auto;
+}
+
+/*input[type=number] {*/
+/*  width: 8rem;*/
+/*}*/
+
 
 /*#delete-button {*/
 /*  width: 240px;*/
