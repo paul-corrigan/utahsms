@@ -104,7 +104,7 @@ passport.use(new LocalStrategy(
   function(username, password, done) {
       console.log(username);
       // console.log(password);
-      const db = require('./db');
+      // const db = require('./db');
       
       db.query('SELECT user_id, password FROM users WHERE email = ?',
       [username],
