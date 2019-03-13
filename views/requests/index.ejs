@@ -1,0 +1,29 @@
+<!--INDEX TEMPLATE BURN REQUESTS-->
+<!-------------------------------->
+
+<% include ../partials/header %>
+
+
+<div class="container">
+    <!--<header class="jumbotron">-->
+        <div class="container">
+            <H1>Burn Requests</H1>
+            <% var total = requests.length %>
+            <p>There are <%=total%> burn requests in the system</p>
+            <p>
+            <span>
+            <a class="btn btn-outline-success btn-lg" href="/requests/new">Register New Burn</a>
+            <a class="btn btn-outline-secondary btn-lg" href="/">Back</a>
+            </span>
+            </p>
+        </div>
+    <!--</header>-->
+
+
+<% requests.forEach(function(burn){ %>
+    <li>
+        <%= burn.name%> - <%= burn.request_acres %> acres - <%=burn.submitted_on%>
+    </li>
+<% }) %>
+
+<% include ../partials/footer %>

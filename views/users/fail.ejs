@@ -1,0 +1,20 @@
+<% include ../partials/header %>
+    <script>
+          function goBack() { window.history.back() }
+    </script>
+    
+    <div class="container">
+        <h1>Sign-up error</h1>
+        <div class="row">
+            <% errors.forEach(function(error, i) {%>
+                <div class="alert alert-danger">
+                    <%=error.msg%>
+                </div>
+                <br>
+            <% }) %>
+           
+        </div>
+        <button class="btn btn-warning" onclick="goBack()">Go Back</button>
+    </div>
+    
+<% include ../partials/footer %>
