@@ -21,6 +21,10 @@ var fs = require('fs');
 //date handling to make SQL inserts and selects easier
 var moment = require('moment');
 
+// can't seem to get this working right
+// var middlewares = require("../middlewares");
+// router.use(middlewares.isLoggedIn);
+
 // LOGIN 
 router.get('/login', function(req, res, next){
     res.render('./users/login');
@@ -46,7 +50,7 @@ router.get('/register', function(req, res, next){
 });
 
 // SHOW USER
-router.get('/profile', authenticationMiddleware(), function(req, res, next){
+router.get('/profile', isLoggedIn(), function(req, res, next){
    res.render('./users/show') ;
 });
 
@@ -93,7 +97,6 @@ router.post('/register', [
                 db.query('SELECT LAST_INSERT_ID() as user_id', function(error, results, fields){
                     if (error) throw error;
                     const user_id = results[0];
-                    console.log(results[0]);
                     req.login(user_id, function(err){
                         res.redirect('/');
                     });
@@ -112,11 +115,9 @@ passport.deserializeUser(function(user_id, done) {
     done(null, user_id);
 });
 
-function authenticationMiddleware() {
+function isLoggedIn() {
   return (req, res, next) => {
-    console.log(`
-      req.session.passport.user: ${JSON.
-      stringify(req.session.passport)}`);
+    
     if(req.isAuthenticated()) return next(
       );
     res.redirect('/login')

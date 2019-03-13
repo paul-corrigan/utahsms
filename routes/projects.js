@@ -34,7 +34,7 @@ router.get("/projects", function(req, res){
 // NEW BURN PROJECT FORM
 
 router.get("/projects/new", function(req, res){
-  //these nested callbacks load various numbers and names to fill dropdowns
+  //these nested callbacks query the db to fill dropdown options
   db.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC', function (error, erts) {
     if (error) throw error;
     db.query('SELECT county_id AS number, name FROM counties', function (error, counties) {
@@ -62,7 +62,7 @@ router.get("/projects/new", function(req, res){
 // GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
 router.post("/projects", function(req, res){
   
-  //take any script tags out of text fields
+  //take any script tags out of text fields for security purposes
   req.body.project_name = req.sanitize(req.body.project_name);
   
   //Logic to make boolean checkboxes work  
@@ -77,7 +77,7 @@ router.post("/projects", function(req, res){
   // build an object to insert into burn_projects from form data
   var newProject = {
         
-        project_name:   req.body.project_name,
+        project_name:   req.body.project_name.param,
         submitted_by:   55, //user auth here
         project_acres:  req.body.project_acres,
         submitted_on:   sqlDate,
@@ -96,7 +96,7 @@ router.post("/projects", function(req, res){
         county:         req.body.county_id
         
     };
-  
+  console.log(newProject);
   var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
     if (err) throw err;
     
@@ -231,7 +231,7 @@ router.put("/projects/:id", function(req, res){
   // need to incorporate req.params.id in the WHERE clause
   var updateArray = [
         req.body.project_acres,
-        req.body.project_name,
+        req.body.project_name.param,
         req.body.elevation_high,
         req.body.elevation_low,
         req.body.duration,

@@ -86,9 +86,11 @@ app.use(passport.session());
 //tells the app to look for type HTTP request appended after _method
 app.use(methodOverride("_method"));
 
-//create global object for user
+
+
+//create logged in object
 app.use(function(req, res, next){
-  res.locals.isAuthenticated = req.isAuthenticated();
+  res.locals.user = req.session.user;
   next();
 });
 
@@ -133,11 +135,11 @@ passport.use(new LocalStrategy(
 
 // HOME PAGE
 app.get("/", function(req, res){
-    console.log(req.user);
-    console.log(req.session);
-    console.log(req.isAuthenticated());
-    res.render("home");
+    if (req.isauthenticated) console.log(req.session.passport.user);
+    // console.log(req.session);
+    res.render("home", { username: req.user });
 });
+
 
 //lets you know the server is running
 app.listen(8080, function () {
