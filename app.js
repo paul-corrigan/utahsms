@@ -13,10 +13,11 @@ var mysql = require('mysql');
 var cTable = require('console.table');
 
 // connect to the database.  in c9 also need to start the sql server by
-// typing mysql-ctl start in the command line of the console.  
+// typing mysql-ctl start in the command line of the console.
 var db = mysql.createConnection({
   host : 'localhost',
-  user : 'pcorrigan',
+  user : 'utahsms',
+  password : 'utahsms',
   database: 'utahsms'
 });
 
@@ -33,6 +34,15 @@ app.use(express.static("public"));
 //need to activate bodyparser
 app.use(bodyParser.urlencoded({extended: true}));
 
+// add the bootstrap script
+app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
+
+// add jquery
+app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
+
+// add mapboxgl
+app.use('/mapbox-gl', express.static(__dirname + '/node_modules/mapbox-gl/dist/'))
+
 //tell express to assume .ejs extension to render route template files
 app.set("view engine", "ejs");
 
@@ -44,17 +54,17 @@ app.get("/", function(req, res){
 
 });
 
-// INDEX OF REGISTERED BURNS 
+// INDEX OF REGISTERED BURNS
 app.get("/burn_projects", function(req, res){
- 
+
     //read the query file into variable called data
-    fs.readFile('queries/burn_project_list.sql', 'utf8', function(err, data) {  
+    fs.readFile('queries/burn_project_list.sql', 'utf8', function(err, data) {
       if (err) throw err;
-      
+
       // if no error query the db return variable results
       db.query(data, function (error, results) {
         if (error) throw error;
-        
+
         //if no error pass the result and render the burn request.ejs template
         res.render("burn_projects", {burns: results});
       });
@@ -77,13 +87,13 @@ app.get("/burn_projects/new", function(req, res){
 // GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
 app.post("/burn_projects", function(req, res){
 
-  //right now can't get the moment.js library to work, the following two lines 
-  //use native js to create a mySQL date for insertion into the db  
+  //right now can't get the moment.js library to work, the following two lines
+  //use native js to create a mySQL date for insertion into the db
   var d = new Date();
   var localDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
-  
+
   var newReq = {
-        
+
         project_number: req.body.project_number,
         project_name:   req.body.project_name,
         project_acres:  req.body.project_acres,
@@ -94,10 +104,10 @@ app.post("/burn_projects", function(req, res){
         duration:       req.body.duration,
         submitted_on:   localDate
     };
-    
+
     var end_result = db.query('INSERT INTO burn_projects SET?', newReq, function(err, result) {
     if (err) throw err;
-    
+
     //redirect back to burn project page
     res.redirect("/burn_projects");
   });
@@ -107,15 +117,15 @@ app.post("/burn_projects", function(req, res){
 app.get("/burn_projects/:id", function(req, res) {
     // Find the burn project with provided ID
     //read the query file into variable called data
-    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, base) {  
+    fs.readFile('queries/burn_project_details.sql', 'utf8', function(err, base) {
       if (err) throw err;
-    
+
       var query = base.concat(req.params.id);
-    
+
     // query the db return variable results
       db.query(query, function (error, foundBurn) {
         if (error) throw error;
-        
+
         //if no error pass the result and render the burn request details.ejs template
         res.render("burn_project_details", {burn: foundBurn})
       });
@@ -130,15 +140,15 @@ app.get("/burn_projects/:id", function(req, res) {
 // INDEX BURN REQUESTS
 
 app.get("/requests", function(req, res){
- 
-    //read the query file 
-    fs.readFile('queries/burn_request_list.sql', 'utf8', function(err, data) {  
+
+    //read the query file
+    fs.readFile('queries/burn_request_list.sql', 'utf8', function(err, data) {
       if (err) throw err;
-      
+
       // if no error query the db
       db.query(data, function (error, results) {
         if (error) throw error;
-        
+
         //if no error pass the result and render the burn request.ejs template
         res.render("requests", {requests: results});
       });
@@ -157,17 +167,23 @@ app.get("/request_form", function(req, res){
 //posts a submitted burn request form to the db
 app.post("/requests", function(req, res){
   var newReq = {
-        
+
         request_acres:  req.body.size,
         start_date:     req.body.start_date,
         end_date:       req.body.end_date,
         submitted_on:   Date.now()
     };
-    
+
     var end_result = db.query('INSERT INTO burns SET?', newReq, function(err, result) {
     if (err) throw err;
     res.redirect("/requests");
   });
+});
+
+app.get("/map", function(req, res){
+
+//directs to the new request form
+    res.render("map");
 });
 
 
