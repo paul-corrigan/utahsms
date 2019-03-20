@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="/jquery/jquery.min.js"></script>
+    <!-- <script src="/popper/popper.js"></script> -->
+    <script src="/bootstrap/js/bootstrap.js"></script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script> -->
+
+    <!-- <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script> -->
+    <script src='/mapbox-gl/mapbox-gl.js'></script>
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.css'/>
+    <!-- <link  rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css'/> -->
+    <link  rel='stylesheet' href='/mapbox-gl/mapbox-gl.css'/>
+    <style>
+      #mapdiv {
+        height:100vh;
+      }
+      .marker {
+        background-image: url('/mapbox/mapbox-icon.png');
+        background-size: cover;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div id="side-bar" class="col-md-4">
+        <form>
+          <div class="form-group row">
+            <label for="dropDownWindDirection" class="col-sm-4 col-form-label">Wind Direction</label>
+            <div class="col-sm-4">
+              <select class="form-control" id="dropDownWindDirection">
+                <option>North</option>
+                <option>North East</option>
+                <option>East</option>
+                <option>South East</option>
+                <option>South</option>
+                <option>South West</option>
+                <option>West</option>
+                <option>North West</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputWindSpeed" class="col-sm-4 col-form-label">Wind Speed (mph)</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="inputWindSpeed" placeholder="5">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div id="mapdiv" class="col-md-8"></div>
+    </div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoidXdlZXJha29vbiIsImEiOiJjanQzZ21hZDkwdTZ4NDNwZzlneXVseWMyIn0.DCN_eBnRl2muTsDjMpiP0Q';
+      var map;
+      // add markers
+      var mrkCurrentLocation;
+
+      $(document).ready(function() {
+        map = new mapboxgl.Map({
+          container: 'mapdiv',
+          style: 'mapbox://styles/mapbox/streets-v9',
+          center: [-111.50, 40],
+          zoom: 7
+        });
+
+        map.on('click', function(e) {
+          if(!mrkCurrentLocation) {
+            mrkCurrentLocation = document.createElement('div');
+            mrkCurrentLocation.className = 'marker';
+          }
+          mrkCurrentLocation.remove();
+          new mapboxgl.Marker(mrkCurrentLocation)
+            .setLngLat(e.lngLat)
+            .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+            .setHTML('<h3>Location</h3><p>Forest department</p>'+JSON.stringify(e.lngLat)))
+            .addTo(map);
+        }); // map.on click
+
+        map.on('load', function () {
+          map.addLayer({
+            'id': 'fireArea',
+            'type': 'fill',
+            'source': {
+              'type': 'geojson',
+              'data': {
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'Polygon',
+                  'coordinates': [[[-112.25256347655917, 40.39440612665291],
+                    [-111.41760253905923, 40.247820878895624],
+                    [-112.02734374999653, 40.569888095647514],
+                    [-112.25256347655917, 40.39440612665291]]]
+                }
+              }
+            },
+            'layout': {},
+            'paint': {
+              'fill-color': '#088',
+              'fill-opacity': 0.8
+            }
+          });
+        }); // map.on load
+      }); // end document ready
+    </script>
+  </body>
+</html>
