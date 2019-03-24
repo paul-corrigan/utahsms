@@ -1,0 +1,146 @@
+<% include ../partials/header %>
+    
+    <div class="container">
+                <form method="post" action="/projects">
+                    <div class="card b-3 border justify-content-around mx-auto">
+                        <H3 class="card-title">Register a new burn</H3>
+                        <div class="card-body">
+                            
+                            <div class="d-flex flex-column justify-content-between">
+                                
+                                <div class="form-group">
+                                    <label for="project_name">Project name: </label>
+                                    <input type="text" id="project_name" class="form-control" name="project_name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="project_acres">  Acres: </label>
+                                    <input type="number" id="project_acres" class="form-control" name="project_acres">
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                    <label for="burn_type">Burn Type</label>
+                                    <select id="burn_type" name="burn_type">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <option value=1>Broadcast</option>
+                                        <option value=5>Piles</option>
+                                    </select>
+                                </div>
+                             
+                                <div class="form-group d-flex flex-column">
+                                    <label for="agency_id">Agency</label>    
+                                    <select id="agency_id" name="agency_id">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <% agencies.forEach(function(agency, i){ %>
+                                        <option value="<%=agency.number%>"><%=agency.name%></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                    <label for="county">County</label>    
+                                    <select id="county" name="county_id">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <% counties.forEach(function(county, i){ %>
+                                        <option value="<%=county.number%>"><%=county.name%></option>
+                                        <% }) %>   
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                    <!--<p>Airsheds 1-15 below 6500 feet. Airshed 16 is all of Utah 6500' and over</p>-->
+                                    <label for="airshed_id">Airshed</label>    
+                                    <select id="airshed_id" name="airshed_id">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <% airsheds.forEach(function(airshed, i){ %>
+                                            <option value="<%=airshed.number%>"><%=airshed.name%></option>
+                                            <% }) %>   
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                    <label for="fuel_model">Main Fuel Model</label>    
+                                    <select id="fuel_model" name="major_fbps_fuel">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <% fuelmods.forEach(function(model, i){ %>
+                                            <option value="<%=model.number%>"><%=model.name%></option>
+                                            <% }) %>   
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                        <label for="ignition_method">Ignition Method</label>    
+                                        <select id="ignition_method" name="ignition_method">
+                                            <option disabled selected value> -- select an option -- </option>
+                                            <% methods.forEach(function(method, i){ %>
+                                            <option value="<%=method.number%>"><%=method.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
+                                
+                                <div class="form-group d-flex flex-column">
+                                        <label for="ert">Emission reduction technique</label> 
+                                        <select id="ert" name="ert">
+                                            <option disabled selected value> -- select an option -- </option>
+                                            <% erts.forEach(function(ert, i){ %>
+                                            <option value="<%=ert.number%>"><%=ert.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
+                            
+                                
+                                <!--<div class="form-group">-->
+
+                                    <p>Check the box if burn is </p>    
+                                
+                                    <label for ="de_minimis"><input type="checkbox" name="de_minimis" value="1" /> De minimis </label>
+                                    
+                                    <label for ="class_1">
+                                    <input type="checkbox" name="class_1" value="1" /> Within a class 1 area  </label>
+                                    
+                                    <label for ="non_attainment">
+                                    <input type="checkbox" name="non_attainment" value="1" /> Within a non-attainment area </label>
+                                <!--</div>-->
+                                <br>
+                           
+                                <div class="form-group">
+                                    <label for="elevation_low">Lowest Elevation: </label>
+                                    <input type="number" id="elevation_low" class="form-control" name="elevation_low">
+                                </div>
+                                
+                                 <div class="form-group">
+                                    <label for="elevation_high">Highest Elevation:    </label>   
+                                    <input type="number" id="elevation_high" class="form-control" name="elevation_high">
+                                                         
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="duration">Expected number of burn days: </label>
+                                    <input type="number" id="duration" class="form-control" name="duration">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pm_max">Maximum tons PM10 expected: </label>
+                                    <input type="number" step="0.1" id="pm-max" class="form-control" name="pm_max">
+                                </div>
+                           
+                            
+                                <div class="form-group d-flex flex-column">
+                                    <label for "first_burn">Earliest Burn Date: </label>
+                                    <input type="date" class="form_control" name="first_burn"> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                    <div class="d-flex justify-content-around">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                                <div>
+                                
+                                <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<% include ../partials/footer %>

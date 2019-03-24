@@ -1,0 +1,58 @@
+<!--INDEX TEMPLATE BURN PROJECTS-->
+<!-------------------------------->
+
+
+
+<% include ../partials/header %>
+
+
+
+<div class="container">
+    <!--<header class="jumbotron">-->
+        <div class="container">
+            <H1>Burn Projects</H1>
+            <% var total = burns.length %>
+            <p>There are <%=total%> burn projects in the system</p>
+            <p>
+            <span>
+            <a class="btn btn-outline-success btn-lg" href="/projects/new">Register New Burn</a>
+            <a class="btn btn-outline-secondary btn-lg" href="/">Back</a>
+            </span>
+            </p>
+        </div>
+    <!--</header>-->
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+              <th scope="col">Project Name</th>
+              <th scope="col">Size</th>
+              <th scope="col">Submitted</th>
+            </tr>
+        </thead>
+      
+        <tbody>
+            
+            <% burns.forEach(function(burn, i){ %>
+                <tr>
+                    <td scope="row">
+                        <a href="/projects/<%=burn.burn_project_id%>">
+                            <%= burn.name.substring(0,30) %>
+                        </a>
+                    </td>
+                    <td scope="row"><%= burn.project_acres%></td>
+                    <%  let utcTime = burn.submitted_on;
+                        // during DST local_date will be an hour off, but can't for the life of me get moment.local() to work right
+                        var local_date= moment(utcTime).subtract(7, 'hours').format('MMM D YYYY h:mm a');%>
+                    <td scope="row"><%= local_date %></td>
+                </tr>        
+                    
+            <% }) %>
+            
+        </tbody>
+    </table>
+    
+    
+</div>
+
+<% include ../partials/footer %>
