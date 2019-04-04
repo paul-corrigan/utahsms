@@ -62,7 +62,14 @@
             <%} else { %>
                 <p>Non_attainment: Yes</p>
             <% } %>
-
+            
+            <!--Iterate through the objectives            -->
+            <hr>
+            <p><strong>Objectives</strong></p>
+            <% objectives.forEach(function(objective, i){ %>
+                        <p class="mb-0"><%= objective.name%></p>
+            <% }) %>
+            
             <!--Iterate through the reviews            -->
             <hr>
             <p><strong>Reviews</strong></p>

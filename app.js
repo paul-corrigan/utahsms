@@ -91,13 +91,13 @@ app.use(session({
 //authentication
 app.use(passport.initialize());
 app.use(passport.session());
-
-//tells the app to look for type HTTP request appended after _method
+  
+//tells the app to look for type of HTTP request appended after _method
 app.use(methodOverride("_method"));
 
 
 
-//create logged in object
+//create logged in object - can't seem to access this
 app.use(function(req, res, next){
   res.locals.user = req.session.user;
   next();
@@ -107,45 +107,53 @@ app.use(function(req, res, next){
 app.use(projectRoutes);
 app.use(requestRoutes);
 app.use(userRoutes);
-//app.use(reportRoutes);
+//app.use(reportRoutes); //for daily burn report form, not yet active 
 
+// set up local strategy for passport for user auth
 passport.use(new LocalStrategy(
   function(username, password, done) {
-      console.log(username);
-      // console.log(password);
-      // const db = require('./db');
-
-      db.query('SELECT user_id, password FROM users WHERE email = ?',
-      [username],
-      function(err, results, fields){
-        if (err) {done(err)};
-
-        // handle the case where the user does not exist
-        if (results.length === 0) {
-          done(null, false);
-        } else {
-
-          // compare the passwords
-          const hash = results[0].password.toString();
-
-          bcrypt.compare(password, hash, function(err, response){
-            if (response === true) {
-              return done(null, {user_id: results[0].user_id})
-            } else {
-
-              //handle incorrect password
-              return done(null, false);
-            }
-          });
-        }
-      });
+      fs.readFile('queries/user_login.sql', 'utf8', function(err, loginquery) {  
+        if (err) throw err;
+        //retrieve hashed pw from db based on user input email
+        db.query(loginquery, username, 
+        function(err, results, fields){
+          //handle sql error
+          if (err) {done(err)};
+          console.log(results);
+          // handle the case where the user does not exist
+          if (results.length === 0) {
+            done(null, false);
+          } else {
+            
+            // compare the passwords
+            const hash = results[0].password.toString();
+            
+            bcrypt.compare(password, hash, function(err, response){
+              if (response === true) {
+                //build a user object to store in session
+                return done(null, { id      : results[0].user_id,
+                                    agency  : results[0].agency,
+                                    phone   : results[0].phone,
+                                    email   : results[0].email,
+                                    name    : results[0].full_name,
+                                    active  : results[0].active
+                })
+              } else {
+                console.log('pasword not correct')
+                //handle incorrect password
+                return done(null, false);
+              }
+            });
+          }
+        });  
+    });
   }
 ));
 
 // HOME PAGE
 app.get("/", function(req, res){
-    if (req.isauthenticated) console.log(req.session.passport.user);
-    // console.log(req.session);
+    if (req.isauthenticated) {console.log(req.session.passport.user.user_email)};
+  //  console.log(req.session);
     res.render("home", { username: req.user });
 });
 

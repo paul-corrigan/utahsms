@@ -46,8 +46,21 @@ router.post('/login', passport.authenticate('local', {
 
 // NEW USER
 router.get('/register', function(req, res, next){
-    res.render('./users/new');
+      //these nested callbacks query the db to fill dropdown options
+  
+        db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
+          if (error) throw error;
+          db.query('SELECT district_id AS number, agency_id AS d_a_id, district, identifier FROM districts', function(error, districts) {
+            if (error) throw error;
+            db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
+              if (error) throw error;
+              res.render("./users/new", {agencies:agencies, });
+            });
+          });
+        });  
+    
 });
+   
 
 // SHOW USER
 router.get('/profile', isLoggedIn(), function(req, res, next){
@@ -56,6 +69,7 @@ router.get('/profile', isLoggedIn(), function(req, res, next){
 
 // CREATE USER
 router.post('/register', [
+    
   // server-side form validation
   check('name').not().isEmpty().withMessage('Name is required'),
   check('phone').not().isEmpty().withMessage('Phone is required'),
@@ -80,13 +94,19 @@ router.post('/register', [
         //res.status(422).json({ errors: errors.array() });
        res.render('./users/fail', {errors: errors.array()});  //can't figure out how to handle this errors object
     } else {
+        //sanitize inputs- take any script tags out of text fields for security purposes
+        //append .param to these new variables to get that input
+        var name = req.sanitize(req.body.name);
+        var email= req.sanitize(req.body.email);
+        var phone= req.sanitize(req.body.phone);
         //Hash password
         bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
             //Create new user object
             var newUser = {
-            full_name:  req.body.name,
-            email:      req.body.email,
-            phone:      req.body.phone,
+            full_name:  name.param,
+            email:      email.param,
+            phone:      phone.param,
+            agency_id:  req.body.agency_id,
             password:   hash,
             active:     0,
             level_id:   3

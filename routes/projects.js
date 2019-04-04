@@ -1,6 +1,9 @@
 var express = require("express");
 var router  = express.Router();
 
+const { check, validationResult } = require('express-validator/check');
+
+
 // making the db connection available IF IN ROUTE FOLDER START PATH WITH DOUBLE DOTS ..
 var db = require('../db');
 
@@ -47,7 +50,18 @@ router.get("/projects/new", function(req, res){
             if (error) throw error;
             db.query('SELECT airshed_id AS number, name FROM airsheds', function(error, airsheds) {
               if (error) throw error;
-              res.render("./projects/new", {erts: erts, counties: counties, methods:methods, agencies:agencies, fuelmods: fuelmods, airsheds:airsheds});
+              db.query('SELECT pre_burn_objective_preset_id AS number, name FROM pre_burn_objective_presets', function(error, objectives) {
+                if (error) throw error;
+                //direct to form template, passing object to populate dropdowns
+                res.render("./projects/new", {
+                erts: erts, 
+                counties: counties, 
+                methods:methods, 
+                agencies:agencies, 
+                objectives:objectives, 
+                fuelmods: fuelmods, 
+                airsheds:airsheds});
+              });
             });
           });
         });  
@@ -70,10 +84,11 @@ router.post("/projects", function(req, res){
   if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
   if (req.body.class_1        === undefined) {req.body.class_1  = 0};
   
+  
+  
   //use js to create current SQL timestamp for insertion into the db  
   var d = new Date();
   var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
-  
   // build an object to insert into burn_projects from form data
   var newProject = {
         
@@ -96,7 +111,7 @@ router.post("/projects", function(req, res){
         county:         req.body.county_id
         
     };
-  console.log(newProject);
+  // console.log(newProject);
   var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
     if (err) throw err;
     
@@ -121,8 +136,29 @@ router.post("/projects", function(req, res){
         var insert2 = db.query('INSERT INTO pre_burns SET?', newPreburn, function(err, result) {
           if (err) throw err;
           
-          // redirect back to burn project index
-          res.redirect("/projects");
+          // load query to get the id of the just inserted pre_burn
+          fs.readFile('queries/last_pre_burn.sql', 'utf8', function(err, data) {  
+            if (err) throw err;
+            // run that query
+            db.query(data, function (error, pre_burnId) {
+              if (error) throw error; 
+              //insert many-many objectives into   
+              var insert3sql = "INSERT INTO pre_burn_objectives (pre_burn_id, pre_burn_objective_preset_id) VALUES ?";
+              var values = [];
+              //build the array of arrays to insert in many-many objectives table
+              req.body.objectives.forEach(function(objectiveId, i){
+                //not sure why objectiveId is a string but the regex removes the quotes, ideally
+                values.push([pre_burnId[0].pre_burn_id, parseInt(objectiveId) ]);
+              });
+              console.log(values);
+              db.query(insert3sql, [values], function(err, result) {
+                if (err) throw err;
+                // redirect back to burn project index
+                res.redirect("/projects");
+                  
+              });
+            });
+          });
         });        
       });
     });
@@ -145,23 +181,32 @@ router.get("/projects/:id", function(req, res) {
       fs.readFile('queries/burn_project_reviews.sql', 'utf8', function(err, reviewquery) {  
         if (err) throw err;
         
-        // query the db for burn request details and return array foundBurn
-        db.query(projectquery, req.params.id, function (error, foundBurn) {
-          if (error) throw error;
-          if (foundBurn[0] === undefined) {
-            console.log('No such burn exists');
-            res.redirect("/projects");
-          } else {
-     
-            // query the db for reviewer comments and return array reviews
-            db.query(reviewquery, req.params.id, function (error, reviews) {
-              if (error) throw error;
-              
-              
-              //if no error pass the burn details, reviews, and momentjs to the ejs template
-              res.render("./projects/show", {burn: foundBurn, reviews:reviews, moment: moment});
-            });
-          };  
+        fs.readFile('queries/objectives_show.sql', 'utf8', function(err, objectivequery) {  
+          if (err) throw err;
+          
+          // query the db for burn request details and return array foundBurn
+          db.query(projectquery, req.params.id, function (error, foundBurn) {
+            if (error) throw error;
+            if (foundBurn[0] === undefined) {
+              console.log('No such burn exists');
+              res.redirect("/projects");
+            } else {
+       
+              // query the db for reviewer comments and return array reviews
+              db.query(reviewquery, req.params.id, function (error, reviews) {
+                if (error) throw error;
+                
+                // query the db for objectives comments and return array objectives
+                db.query(objectivequery, req.params.id, function (error, objectives) {
+                if (error) throw error;
+                  console.log(objectives);
+                  console.log(reviews);
+                  //if no error pass the burn details, reviews, objectives, and momentjs to the ejs template
+                  res.render("./projects/show", {burn: foundBurn, reviews:reviews, moment: moment, objectives:objectives});
+                });
+              });
+            };
+          });  
         });
       });
     });
