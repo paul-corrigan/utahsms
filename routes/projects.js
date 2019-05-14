@@ -80,9 +80,22 @@ router.post("/projects", function(req, res){
   req.body.project_name = req.sanitize(req.body.project_name);
   
   //Logic to make boolean checkboxes work  
-  if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
-  if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
-  if (req.body.class_1        === undefined) {req.body.class_1  = 0};
+  if (req.body.agency_id === undefined)           {req.body.agency_id = 1};
+  if (req.body.project_name.param === undefined)  {req.body.project_name = "Unnamed Project"};
+  if (req.body.airshed_id === undefined)          {req.body.airshed_id = 16};
+  if (req.body.class_1        === undefined)      {req.body.class_1  = 0};
+  if (req.body.non_attainment === undefined)      {req.body.non_attainment  = 0};
+  if (req.body.de_minimis     === undefined)      {req.body.de_minimis = 0};
+  if (req.body.project_acres === undefined)       {req.body.project_acres = 1};
+  if (req.body.elevation_low === undefined)       {req.body.elevation_low = 3179};
+  if (req.body.elevation_high === undefined)      {req.body.elevation_high = 13528};
+  if (req.body.major_fbps_fuel === undefined)     {req.body.major_fbps_fuel = 1};
+  console.log('first burn: ' + req.body.first_burn);
+  //if (req.body.first_burn === undefined) {req.body.first_burn = 1};
+  if (req.body.duration === undefined)            {req.body.major_fbps_fuel = 1};
+  if (req.body.ignition_method === undefined)     {req.body.major_fbps_fuel = 1};
+  if (req.body.county === undefined)              {req.body.major_fbps_fuel = 1};
+  if (req.body.burn_type === undefined)           {req.body.major_fbps_fuel = 1};
   
   
   
@@ -91,25 +104,36 @@ router.post("/projects", function(req, res){
   var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
   // build an object to insert into burn_projects from form data
   var newProject = {
-        
-        project_name:   req.body.project_name.param,
-        submitted_by:   55, //user auth here
-        project_acres:  req.body.project_acres,
-        submitted_on:   sqlDate,
+        //burn_project_id: auto-incremented
         agency_id:      req.body.agency_id,
-        elevation_low:  req.body.elevation_low,
-        elevation_high: req.body.elevation_high,
+        district_id:    17, //user auth here
+        added_by:       55, //user auth here
+        added_on:       sqlDate,
+        updated_by:     17, //placeholder for now
+        //updated_on:   CURRENT_TIMESTAMP in mySQL
+        submitted_by:   17, //placeholder, may deprecate
+        submitted_on:   sqlDate,
+        project_number: "SMS000",//placeholder, deprecate
+        project_name:   req.body.project_name.param,
         airshed_id:     req.body.airshed_id,
         class_1:        req.body.class_1,
         non_attainment: req.body.non_attainment,
         de_minimis:     req.body.de_minimis,
-        duration:       req.body.duration,
-        first_burn:     req.body.first_burn,
-        burn_type:      req.body.burn_type,
-        ignition_method:req.body.ignition_method,
+        location:       "(38, -110.5)",
+        project_acres:  req.body.project_acres,
+        completion_year:2100, //deprecate
+        black_acres_current: 9999, //deprecate?
+        elevation_low:  req.body.elevation_low,
+        elevation_high: req.body.elevation_high,
         major_fbps_fuel:req.body.major_fbps_fuel,
-        county:         req.body.county_id
-        
+        first_burn:     req.body.first_burn,
+        duration:       req.body.duration,
+        ignition_method:req.body.ignition_method, //deprecate this, should be many-many
+        county:         req.body.county_id,
+        burn_type:      req.body.burn_type,
+        number_of_piles: 9999,
+        // comment: initially NULL       
+        // other_ignition_method: deprecate this, should be many-many
     };
   // console.log(newProject);
   var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
@@ -127,7 +151,8 @@ router.post("/projects", function(req, res){
         var newPreburn = {
           burn_project_id:results[0].burn_project_id,
           agency_id:      req.body.agency_id,
-          submitted_by:   55,
+          added_by:       55, //user auth here
+          district_id:    17, //user auth here
           submitted_on:   sqlDate,
           acres:          req.body.project_acres,
           pm_max:         req.body.pm_max
@@ -146,11 +171,14 @@ router.post("/projects", function(req, res){
               var insert3sql = "INSERT INTO pre_burn_objectives (pre_burn_id, pre_burn_objective_preset_id) VALUES ?";
               var values = [];
               //build the array of arrays to insert in many-many objectives table
+              console.log("objective 1: " + req.body.objectives[0]);
+              console.log("objective 2: " + req.body.objectives[1]);
+              
               req.body.objectives.forEach(function(objectiveId, i){
                 //not sure why objectiveId is a string but the regex removes the quotes, ideally
                 values.push([pre_burnId[0].pre_burn_id, parseInt(objectiveId) ]);
               });
-              console.log(values);
+              //console.log("[pre_burn_id, burn objective value]s: " + values);
               db.query(insert3sql, [values], function(err, result) {
                 if (err) throw err;
                 // redirect back to burn project index
@@ -188,6 +216,7 @@ router.get("/projects/:id", function(req, res) {
           db.query(projectquery, req.params.id, function (error, foundBurn) {
             if (error) throw error;
             if (foundBurn[0] === undefined) {
+              //console.log(foundburn[0]);
               console.log('No such burn exists');
               res.redirect("/projects");
             } else {

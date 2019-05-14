@@ -70,7 +70,7 @@ app.use(express.static("public"));
 var options = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  // password: process.env.DB_PASSWORD,
+  password: process.env.DB_PASSWORD,
   database : process.env.DB_NAME
 };
 
@@ -118,7 +118,7 @@ passport.use(new LocalStrategy(
         db.query(loginquery, username, 
         function(err, results, fields){
           //handle sql error
-          if (err) {done(err)};
+          if (err) {done(err)}
           console.log(results);
           // handle the case where the user does not exist
           if (results.length === 0) {
@@ -152,7 +152,7 @@ passport.use(new LocalStrategy(
 
 // HOME PAGE
 app.get("/", function(req, res){
-    if (req.isauthenticated) {console.log(req.session.passport.user.user_email)};
+    if (req.isauthenticated) {console.log(req.session.passport.user.user_email)}
   //  console.log(req.session);
     res.render("home", { username: req.user });
 });
@@ -165,6 +165,6 @@ app.get("/map", function(req, res){
 
 
 //lets you know the server is running
-app.listen(8080, function () {
-  console.log('App listening on port 8080!');
+app.listen(3000, function () {
+  console.log('App listening on port 3000!');
 });

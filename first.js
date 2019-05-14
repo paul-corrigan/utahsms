@@ -6,15 +6,15 @@ var bcrypt      = require('bcrypt');
 var saltRounds  = 10;
 
 // making the db connection available 
-var db = require('./db');
+//var db = require('./db');
 
 
 app.get("/", function(req, res){
   res.send("HELLO FROM OUR WEB APP!");
 });
 
-app.listen(8080, function () {
-  console.log('App listening on port 8080!');
+app.listen(3000, function () {
+  console.log('App listening on port 3000!');
 });
 
 //some one time code to populate db etc.
@@ -41,4 +41,4 @@ app.listen(8080, function () {
 
 
 
-db.end();
+//db.end();
