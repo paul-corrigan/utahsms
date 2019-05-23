@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "async": "^3.0.0",
     "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.3",

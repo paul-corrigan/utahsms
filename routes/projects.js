@@ -1,6 +1,7 @@
 var express = require("express");
-var router  = express.Router();
-
+var router  = express.Router(),
+    expressValidator= require('express-validator'), //validate user inputs server-side
+    expressSanitizer = require("express-sanitizer"); // sanitize scripts etc. from user input
 const { check, validationResult } = require('express-validator/check');
 
 
@@ -73,117 +74,147 @@ router.get("/projects/new", function(req, res){
 
 
 // CREATE NEW BURN PROJECT
-// GET DATA FROM NEW BURN PROJECT FORM, POST TO DB, REDIRECT TO BURN PROJECTS
-router.post("/projects", function(req, res){
+// GET DATA FROM NEW BURN PROJECT FORM, SANITIZE, VALIDATE, POST TO DB, REDIRECT TO BURN PROJECTS
+
+router.post("/projects", [
+  // server-side form validation
+  check('agency_id').not().isEmpty().withMessage('Agency is required'),
+  check('airshed_id').not().isEmpty().withMessage('Airshed is required'),
+  check('project_acres').not().isEmpty().isInt().withMessage('Acres should be a number'),
+  check('elevation_low').not().isEmpty().isInt().withMessage('Low elevation should be a number'),
+  check('elevation_high').not().isEmpty().isInt().withMessage('High elevation should be a number'),
+  check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
+  check('first_burn').not().isEmpty().withMessage('First burn date required'),
+  check('duration').not().isEmpty().isInt().withMessage('Duration should be a number'),
+  check('ignition_method').not().isEmpty().isInt().withMessage('Ignition method required'),
+  check('county_id').not().isEmpty().isInt().withMessage('County required'),
+  check('burn_type').not().isEmpty().isInt().withMessage('Burn Type required'),
+  ], function(req, res){
+  //
   
-  //take any script tags out of text fields for security purposes
-  req.body.project_name = req.sanitize(req.body.project_name);
+  const errors = validationResult(req);
   
-  //Logic to make boolean checkboxes work  
-  if (req.body.agency_id === undefined)           {req.body.agency_id = 1};
-  if (req.body.project_name.param === undefined)  {req.body.project_name = "Unnamed Project"};
-  if (req.body.airshed_id === undefined)          {req.body.airshed_id = 16};
-  if (req.body.class_1        === undefined)      {req.body.class_1  = 0};
-  if (req.body.non_attainment === undefined)      {req.body.non_attainment  = 0};
-  if (req.body.de_minimis     === undefined)      {req.body.de_minimis = 0};
-  if (req.body.project_acres === undefined)       {req.body.project_acres = 1};
-  if (req.body.elevation_low === undefined)       {req.body.elevation_low = 3179};
-  if (req.body.elevation_high === undefined)      {req.body.elevation_high = 13528};
-  if (req.body.major_fbps_fuel === undefined)     {req.body.major_fbps_fuel = 1};
-  console.log('first burn: ' + req.body.first_burn);
-  //if (req.body.first_burn === undefined) {req.body.first_burn = 1};
-  if (req.body.duration === undefined)            {req.body.major_fbps_fuel = 1};
-  if (req.body.ignition_method === undefined)     {req.body.major_fbps_fuel = 1};
-  if (req.body.county === undefined)              {req.body.major_fbps_fuel = 1};
-  if (req.body.burn_type === undefined)           {req.body.major_fbps_fuel = 1};
+  if(!errors.isEmpty()) {
+        console.log(errors.array());
+        //res.status(422).json({ errors: errors.array() });
+       res.render('./fail', {errors: errors.array()});  
+    } else {
   
-  
-  
-  //use js to create current SQL timestamp for insertion into the db  
-  var d = new Date();
-  var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
-  // build an object to insert into burn_projects from form data
-  var newProject = {
-        //burn_project_id: auto-incremented
-        agency_id:      req.body.agency_id,
-        district_id:    17, //user auth here
-        added_by:       55, //user auth here
-        added_on:       sqlDate,
-        updated_by:     17, //placeholder for now
-        //updated_on:   CURRENT_TIMESTAMP in mySQL
-        submitted_by:   17, //placeholder, may deprecate
-        submitted_on:   sqlDate,
-        project_number: "SMS000",//placeholder, deprecate
-        project_name:   req.body.project_name.param,
-        airshed_id:     req.body.airshed_id,
-        class_1:        req.body.class_1,
-        non_attainment: req.body.non_attainment,
-        de_minimis:     req.body.de_minimis,
-        location:       "(38, -110.5)",
-        project_acres:  req.body.project_acres,
-        completion_year:2100, //deprecate
-        black_acres_current: 9999, //deprecate?
-        elevation_low:  req.body.elevation_low,
-        elevation_high: req.body.elevation_high,
-        major_fbps_fuel:req.body.major_fbps_fuel,
-        first_burn:     req.body.first_burn,
-        duration:       req.body.duration,
-        ignition_method:req.body.ignition_method, //deprecate this, should be many-many
-        county:         req.body.county_id,
-        burn_type:      req.body.burn_type,
-        number_of_piles: 9999,
-        // comment: initially NULL       
-        // other_ignition_method: deprecate this, should be many-many
-    };
-  // console.log(newProject);
-  var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
-    if (err) throw err;
-    
-    // load query to get the id of the just inserted project
-    fs.readFile('queries/last_burn_project.sql', 'utf8', function(err, data) {  
-      if (err) throw err;
-      
-      //run that query
-      db.query(data, function (error, results) {
-        if (error) throw error; 
-        
-        // build an object to insert into pre_burns from form data
-        var newPreburn = {
-          burn_project_id:results[0].burn_project_id,
+    //Sanitize- take any script tags out of text fields for security purposes
+    req.body.project_name.param = req.sanitize(req.body.project_name.param);
+
+    //Logic to make boolean checkboxes work  
+    if (req.body.class_1        === undefined)      {req.body.class_1  = 0};
+    if (req.body.non_attainment === undefined)      {req.body.non_attainment  = 0};
+    if (req.body.de_minimis     === undefined)      {req.body.de_minimis = 0};
+
+     //basic "server-side" validation
+    if (req.body.project_name === undefined)  {name = "Unnamed Project"};
+    if (req.body.agency_id === undefined)  {req.body.agency_id = 1};
+    if (req.body.airshed_id === undefined)          {req.body.airshed_id = 16};
+    if (req.body.project_acres === undefined)       {req.body.project_acres = 1};
+    if (req.body.elevation_low <2179 || req.body.elevation_low === undefined)       {req.body.elevation_low = 2179};
+    if (req.body.elevation_high >13528 || req.body.elevation_high === undefined)      {req.body.elevation_high = 13528};
+    if (req.body.major_fbps_fuel === undefined)     {req.body.major_fbps_fuel = 1};
+    console.log('first burn: ' + req.body.first_burn);
+    if (req.body.first_burn === undefined) {req.body.first_burn = 1};
+    if (req.body.duration === undefined)            {req.body.duration = 1};
+    if (req.body.ignition_method === undefined)     {req.body.ignition_method = 1};
+    if (req.body.county_id === undefined)              {req.body.county_id = 1};
+    if (req.body.burn_type === undefined)           {req.body.burn_type = 1};
+
+
+
+    //use js to create current SQL timestamp for insertion into the db  
+    var d = new Date();
+    var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
+    // build an object to insert into burn_projects from form data
+    var newProject = {
+          //burn_project_id: auto-incremented
           agency_id:      req.body.agency_id,
-          added_by:       55, //user auth here
           district_id:    17, //user auth here
+          added_by:       55, //user auth here
+          added_on:       sqlDate,
+          updated_by:     17, //placeholder for now
+          //updated_on:   CURRENT_TIMESTAMP in mySQL
+          submitted_by:   17, //placeholder, may deprecate
           submitted_on:   sqlDate,
-          acres:          req.body.project_acres,
-          pm_max:         req.body.pm_max
-        };
-        
-        var insert2 = db.query('INSERT INTO pre_burns SET?', newPreburn, function(err, result) {
-          if (err) throw err;
-          
-          // load query to get the id of the just inserted pre_burn
-          fs.readFile('queries/last_pre_burn.sql', 'utf8', function(err, data) {  
+          project_number: "SMS000",//placeholder, deprecate
+          project_name:   req.body.project_name,
+          airshed_id:     req.body.airshed_id,
+          class_1:        req.body.class_1,
+          non_attainment: req.body.non_attainment,
+          de_minimis:     req.body.de_minimis,
+          location:       "(38, -110.5)",
+          project_acres:  req.body.project_acres,
+          completion_year:2100, //deprecate
+          black_acres_current: 9999, //deprecate?
+          elevation_low:  req.body.elevation_low,
+          elevation_high: req.body.elevation_high,
+          major_fbps_fuel:req.body.major_fbps_fuel,
+          first_burn:     req.body.first_burn,
+          duration:       req.body.duration,
+          ignition_method:req.body.ignition_method, //deprecate this, should be many-many
+          county:         req.body.county_id,
+          burn_type:      req.body.burn_type,
+          number_of_piles: 9999, //placeholder - deprecate?
+      };
+    console.log(newProject);
+
+    var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
+      if (err) throw err;
+
+      // load query to get the id of the just inserted project
+      fs.readFile('queries/last_burn_project.sql', 'utf8', function(err, data) {  
+        if (err) throw err;
+
+        //run that query
+        db.query(data, function (error, results) {
+          if (error) throw error; 
+
+          // build an object to insert into pre_burns from form data
+          var newPreburn = {
+            burn_project_id:results[0].burn_project_id,
+            agency_id:      req.body.agency_id,
+            added_by:       55, //user auth here
+            district_id:    17, //user auth here
+            submitted_on:   sqlDate,
+            acres:          req.body.project_acres,
+            pm_max:         req.body.pm_max
+          };
+
+          var insert2 = db.query('INSERT INTO pre_burns SET?', newPreburn, function(err, result) {
             if (err) throw err;
-            // run that query
-            db.query(data, function (error, pre_burnId) {
-              if (error) throw error; 
-              //insert many-many objectives into   
-              var insert3sql = "INSERT INTO pre_burn_objectives (pre_burn_id, pre_burn_objective_preset_id) VALUES ?";
-              var values = [];
-              //build the array of arrays to insert in many-many objectives table
-              console.log("objective 1: " + req.body.objectives[0]);
-              console.log("objective 2: " + req.body.objectives[1]);
-              
-              req.body.objectives.forEach(function(objectiveId, i){
-                //not sure why objectiveId is a string but the regex removes the quotes, ideally
-                values.push([pre_burnId[0].pre_burn_id, parseInt(objectiveId) ]);
-              });
-              //console.log("[pre_burn_id, burn objective value]s: " + values);
-              db.query(insert3sql, [values], function(err, result) {
-                if (err) throw err;
-                // redirect back to burn project index
-                res.redirect("/projects");
-                  
+
+            // load query to get the id of the just inserted pre_burn
+            fs.readFile('queries/last_pre_burn.sql', 'utf8', function(err, data) {  
+              if (err) throw err;
+              // run that query
+              db.query(data, function (error, pre_burnId) {
+                if (error) throw error; 
+                //insert many-many objectives into   
+                var insert3sql = "INSERT INTO pre_burn_objectives (pre_burn_id, pre_burn_objective_preset_id) VALUES ?";
+                var values = [];
+                //build the array of arrays to insert in many-many objectives table
+                if (req.body.objectives.length > 1) {
+                req.body.objectives.forEach(function(objectiveId, i){
+                  //not sure why objectiveId is a string but parseInt removes the quotes, ideally
+                  values.push([pre_burnId[0].pre_burn_id, parseInt(objectiveId) ]);
+                  });
+                } else {
+                  if (req.body.objectives.length === 1) {
+                  values.push([pre_burnId[0].pre_burn_id, req.body.objectives[0] ]);
+                  }
+                  else {
+                    values = [];
+                  }
+                }
+
+                db.query(insert3sql, [values], function(err, result) {
+                  if (err) throw err;
+                  // redirect back to burn project index
+                  res.redirect("/projects");
+
               });
             });
           });
@@ -191,6 +222,7 @@ router.post("/projects", function(req, res){
       });
     });
   });
+ }
 });
 
 
@@ -283,55 +315,78 @@ router.get("/projects/:id/edit", function(req, res) {
 
 // UPDATE BURN PROJECT
 
-router.put("/projects/:id", function(req, res){
+router.put("/projects/:id", [
+  // server-side form validation
+  check('agency_id').not().isEmpty().withMessage('Agency is required'),
+  check('airshed_id').not().isEmpty().withMessage('Airshed is required'),
+  check('project_acres').not().isEmpty().isInt().withMessage('Acres should be a number'),
+  check('elevation_low').not().isEmpty().isInt().withMessage('Low elevation should be a number'),
+  check('elevation_high').not().isEmpty().isInt().withMessage('High elevation should be a number'),
+  check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
+  check('first_burn').not().isEmpty().withMessage('First burn date required'),
+  check('duration').not().isEmpty().isInt().withMessage('Duration should be a number'),
+  check('ignition_method').not().isEmpty().isInt().withMessage('Ignition method required'),
+  check('county_id').not().isEmpty().isInt().withMessage('County required'),
+  check('burn_type').not().isEmpty().isInt().withMessage('Burn Type required'),
+  ], function(req, res){
+  //
   
-  //take any script tags out of text fields
-  req.body.project_name = req.sanitize(req.body.project_name);
+  const errors = validationResult(req);
   
-  //Logic to make boolean checkboxes work  
-  if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
-  if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
-  if (req.body.class_1        === undefined) {req.body.class_1  = 0};
-  if (req.body.de_minimis     === 'on') {req.body.de_minimis = 1};
-  if (req.body.non_attainment === 'on') {req.body.non_attainment  = 1};
-  if (req.body.class_1        === 'on') {req.body.class_1  = 1};
+  if(!errors.isEmpty()) {
+        console.log(errors.array());
+        //res.status(422).json({ errors: errors.array() });
+       res.render('./fail', {errors: errors.array()});  
+    } else {
   
-  //use native js to create a mySQL date for insertion into the db  
-  var d = new Date();
-  var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
-  
-  // build an ARRAY to UPDATE burn_projects from form data
-  // Couldn't figure out how to use an object due to the 
-  // need to incorporate req.params.id in the WHERE clause
-  var updateArray = [
-        req.body.project_acres,
-        req.body.project_name.param,
-        req.body.elevation_high,
-        req.body.elevation_low,
-        req.body.duration,
-        req.body.agency_id,
-        // //implement user auth here
-        req.body.airshed_id,
-        req.body.class_1,
-        req.body.non_attainment,
-        req.body.de_minimis,
-        req.body.major_fbps_fuel,
-        req.body.first_burn,
-        req.body.ignition_method,
-        req.body.county_id,
-        req.body.burn_type,
-        sqlDate,
-        req.params.id
-        ];
-  fs.readFile('queries/burn_project_update.sql', 'utf8', function(err, updateQuery) {  
-      if (err) throw err;
-      db.query(updateQuery, updateArray, function(err, result) {
-        if (err) {throw err;} else {
-          res.redirect("/projects/" + req.params.id);
-        }
+    //take any script tags out of text fields
+    req.body.project_name = req.sanitize(req.body.project_name);
+
+    //Logic to make boolean checkboxes work  
+    if (req.body.de_minimis     === undefined) {req.body.de_minimis = 0};
+    if (req.body.non_attainment === undefined) {req.body.non_attainment  = 0};
+    if (req.body.class_1        === undefined) {req.body.class_1  = 0};
+    if (req.body.de_minimis     === 'on') {req.body.de_minimis = 1};
+    if (req.body.non_attainment === 'on') {req.body.non_attainment  = 1};
+    if (req.body.class_1        === 'on') {req.body.class_1  = 1};
+
+    //use native js to create a mySQL date for insertion into the db  
+    var d = new Date();
+    var sqlDate = d.toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
+
+    // build an ARRAY to UPDATE burn_projects from form data
+    // Couldn't figure out how to use an object due to the 
+    // need to incorporate req.params.id in the WHERE clause
+    var updateArray = [
+          req.body.project_acres,
+          req.body.project_name.param,
+          req.body.elevation_high,
+          req.body.elevation_low,
+          req.body.duration,
+          req.body.agency_id,
+          // //implement user auth here
+          req.body.airshed_id,
+          req.body.class_1,
+          req.body.non_attainment,
+          req.body.de_minimis,
+          req.body.major_fbps_fuel,
+          req.body.first_burn,
+          req.body.ignition_method,
+          req.body.county_id,
+          req.body.burn_type,
+          sqlDate,
+          req.params.id
+          ];
+    fs.readFile('queries/burn_project_update.sql', 'utf8', function(err, updateQuery) {  
+        if (err) throw err;
+        db.query(updateQuery, updateArray, function(err, result) {
+          if (err) {throw err;} else {
+            res.redirect("/projects/" + req.params.id);
+          }
+        });
+
       });
-    
-  });
+    }
 });
 
 // DELETE BURN PROJECT

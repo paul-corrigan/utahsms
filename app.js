@@ -4,6 +4,8 @@ var express         = require('express'),
     expressSanitizer= require("express-sanitizer"); //sanitize scripts etc. from user input
 var cookieParser    = require('cookie-parser');
 var bodyParser      = require("body-parser"); //body parser allows express to handle user input data from a post request
+var async           = require("async"); // avoid nested callbacks
+
 
 //authentication packages
 var session     = require('express-session'); //session middleware for user functions -> keeps user logged in even if server restarts

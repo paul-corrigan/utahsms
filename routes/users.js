@@ -92,7 +92,7 @@ router.post('/register', [
     if(!errors.isEmpty()) {
         console.log(errors.array());
         //res.status(422).json({ errors: errors.array() });
-       res.render('./users/fail', {errors: errors.array()});  //can't figure out how to handle this errors object
+       res.render('./fail', {errors: errors.array()});  //can't figure out how to handle this errors object
     } else {
         //sanitize inputs- take any script tags out of text fields for security purposes
         //append .param to these new variables to get that input

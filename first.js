@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var bcrypt      = require('bcrypt');
 var saltRounds  = 10;
-
+var async = require('async');
 // making the db connection available 
 //var db = require('./db');
 
@@ -16,6 +16,26 @@ app.get("/", function(req, res){
 app.listen(3000, function () {
   console.log('App listening on port 3000!');
 });
+
+function fastFunction (done) {
+  setTimeout(function () {
+    done()
+  }, 100)
+  console.log('Fast')
+}
+
+function slowFunction (done) {
+  setTimeout(function () {
+    done()
+  }, 300)
+  console.log('Slow')
+}
+  
+ async.waterfall([slowFunction, fastFunction], () => {
+ console.log('done')
+ })
+
+
 
 //some one time code to populate db etc.
 
@@ -38,7 +58,6 @@ app.listen(3000, function () {
 //         });
       
 // });
-
 
 
 //db.end();
