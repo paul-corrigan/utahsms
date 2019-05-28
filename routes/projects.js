@@ -90,14 +90,14 @@ router.post("/projects", [
   check('county_id').not().isEmpty().isInt().withMessage('County required'),
   check('burn_type').not().isEmpty().isInt().withMessage('Burn Type required'),
   check('objectives').not().isEmpty().isInt().withMessage('At least one valid objective required'),  
-  check('pm_max').not().isEmpty().isInt().withMessage('Estimate of total tons PM required'),  
+  check('pm_max').not().isEmpty().withMessage('Estimate of total tons PM required'),  
   ], function(req, res){
   //
   
   const errors = validationResult(req);
   
   if(!errors.isEmpty()) {
-        console.log(errors.array());
+        //console.log(errors.array());
         //res.status(422).json({ errors: errors.array() });
        res.render('./fail', {errors: errors.array()});  
     } else {
@@ -162,8 +162,8 @@ router.post("/projects", [
           number_of_piles: 9999, //placeholder - deprecate?
           pm_max:         req.body.pm_max,
       };
-    console.log(newProject);
 
+    //Add new row to burn_projects table
     var insert1 = db.query('INSERT INTO burn_projects SET?', newProject, function(err, result) {
       if (err) throw err;
 
@@ -177,26 +177,17 @@ router.post("/projects", [
 
           //query to insert many-many objectives into pre_burn_objectives  
             var insert3sql = "INSERT INTO pre_burn_objectives (pre_burn_id, pre_burn_objective_preset_id, burn_project_id) VALUES ?";
-
-            //build the array of arrays to insert in many-many objectives table
-            var values = [];
-               
-          // req.body.objectives.map //there must be some way to dry this up
-                if (req.body.objectives.length > 1) {
-                req.body.objectives.forEach(function(objectiveId, i){
-                  //not sure why objectiveId is a string but parseInt removes the quotes, ideally
-                  values.push([ 9999, parseInt(objectiveId), project_id[0].burn_project_id]);
-                  });
-                } else {
-                  if (req.body.objectives.length === 1) {
-                  values.push([ 9999, req.body.objectives[0], project_id[0].burn_project_id ]);
-                  }
-                  else {
-                    values = [];
-                  }
-                }
-
-                db.query(insert3sql, [values], function(err, result) {
+            //build the array of arrays to insert into objectives table 
+            var objs   = [];   
+            
+            //if just one objective is selected it comes as a string and needs to be handled differently
+            if (!Array.isArray(req.body.objectives)) {objs.push([ 9999, req.body.objectives, project_id[0].burn_project_id ]);}
+            else { 
+              for (var i=0; i<req.body.objectives.length; i++){
+                objs.push([ 9999, parseInt(req.body.objectives[i]), project_id[0].burn_project_id ]);
+              }
+            }                    
+                db.query(insert3sql, [objs], function(err, result) {
                   if (err) throw err;
                   // redirect back to burn project index
                   res.redirect("/projects");

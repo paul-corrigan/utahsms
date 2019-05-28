@@ -16,7 +16,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var MySQLStore = require('express-mysql-session')(session);
 
 //node framework to interface with mysql
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 //easy way to verify query results, print the table to the console
 var cTable = require('console.table');

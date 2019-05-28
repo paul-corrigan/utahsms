@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 // db credentials etc in config file .env which is .gitignored
 require('dotenv').config();

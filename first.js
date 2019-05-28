@@ -9,9 +9,9 @@ var async = require('async');
 //var db = require('./db');
 
 
-app.get("/", function(req, res){
-  res.send("HELLO FROM OUR WEB APP!");
-});
+// app.get("/", function(req, res){
+//   res.send("HELLO FROM OUR WEB APP!");
+// });
 
 app.listen(3000, function () {
   console.log('App listening on port 3000!');
@@ -31,11 +31,22 @@ function slowFunction (done) {
   console.log('Slow')
 }
   
- async.waterfall([slowFunction, fastFunction], () => {
+ async.waterfall([fastFunction, slowFunction], () => {
  console.log('done')
  })
 
+// function countDown(seconds) {
+  
+//  var intervalId = setInterval(function(){
+//    console.log(seconds); 
+//    seconds--;
+//     if (seconds === 0) {
+//       console.log('Ding Ding Ding');
+//       clearInterval(intervalId); }
+//   }, 1000);
+// }
 
+// countDown(5);
 
 //some one time code to populate db etc.
 
