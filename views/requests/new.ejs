@@ -1,31 +1,46 @@
 <% include ../partials/header %>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-offset-3">
-                <h1>Burn Request</h1>
-                <form method="post" action="/requests">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label for="burn_project">Burn Project: </label>
-                                <input type="text" id="burn_project" class="form-control" name="name">
-                            </div>
-                            <div class="form-group">
-                                <label for="acres">Requested Acres: </label>
-                                <input type="number" id="acres" class="form-control" name="size">
-                            </div>
-                            <div class="form-group">
-                                <label for="burn_window">Burn Window: </label>
-                                <input type="date" id="start_date" class="form-control" name="start_date">
-                                <br>
-                                <input type="date" id="end_date" class="form-control" name="end_date">
-                            </div>
-                            <button type="submit" class="btn btn-success">Submit</button>
-                            <a class="btn btn-secondary" href="/requests" role="button">Cancel</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
+<div class="container">
+  <form method="post" action="/requests">
+      <div class="card b-3 border justify-content-around mx-auto">
+          <H3 class="card-title">Register a new burn</H3>
+          <div class="card-body">
+
+              <div class="d-flex flex-column justify-content-between">
+
+                  <div class="form-group d-flex flex-column">
+                      <label for="burn_project">Burn</label>    
+                      <select id="burn_project" name="burn_project">
+                          <option disabled selected value> -- select an option -- </option>
+                          <% projects.forEach(function(project, i){ %>
+                          <option value="<%=project.number%>"><%=project.name%></option>                                   
+                          <% }) %>
+                      </select>
+                  </div>
+
+                  <div class="form-group">
+                      <label for="acres">Requested Acres: </label>
+                      <input type="number" id="acres" class="form-control" name="size">
+                  </div>
+
+                  <div class="form-group">
+                      <label for="burn_window">Burn Window: </label>
+                      <input type="date" id="start_date" class="form-control" name="start_date">
+                      <br>
+                      <input type="date" id="end_date" class="form-control" name="end_date">
+                  </div>
+                 
+              </div>
+              <div class="d-flex justify-content-around">
+                <button type="submit" class="btn btn-success">Submit</button>
+                <div>
+
+                <a class="btn btn-danger" name="cancel" href="/requests">Cancel</a>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+    
+
 <% include ../partials/footer %>

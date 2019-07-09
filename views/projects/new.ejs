@@ -2,6 +2,12 @@
     
     <div class="container">
                 <form method="post" action="/projects">
+                  <div class="d-flex justify-content-around">
+                      <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                      <button type="submit" class="btn btn-success">Submit</button>
+                      
+                  </div>
+                    
                     <div class="card b-3 border justify-content-around mx-auto">
                         <H3 class="card-title">Register a new burn</H3>
                         <div class="card-body">
@@ -32,7 +38,7 @@
                                     <select id="agency_id" name="agency_id">
                                         <option disabled selected value> -- select an option -- </option>
                                         <% agencies.forEach(function(agency, i){ %>
-                                        <option value="<%=agency.number%>"><%=agency.name%></option>
+                                        <%if (agency.display==1) {%>  <option value="<%=agency.number%>"><%=agency.name%></option>  <%}%>                                    
                                         <% }) %>
                                     </select>
                                 </div>
@@ -136,17 +142,16 @@
                             
                                 <div class="form-group d-flex flex-column">
                                     <label for "first_burn">Earliest Burn Date: </label>
-                                    <input type="date" class="form_control date" name="first_burn"> 
+                                    <input type="text" id="datepicker" name="first_burn"> <!-- class="form_control date" -->
                                 </div>
                                 
                             </div>
                         </div>
                     <div class="d-flex justify-content-around">
-                                <button type="submit" class="btn btn-success">Submit</button>
-                                <div>
-                                
-                                <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
-                    </div>
+                      <button type="submit" class="btn btn-success">Submit</button>
+                        <div>
+                        <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                        </div>
                     </div>
                 </form>
             </div>

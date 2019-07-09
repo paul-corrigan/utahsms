@@ -38,14 +38,51 @@ router.get("/projects", function(req, res){
 // NEW BURN PROJECT FORM
 
 router.get("/projects/new", function(req, res){
-  //these nested callbacks query the db to fill dropdown options
+//   Trying to clean up the nested callbacks but couldn't get this to work. 
+  
+//   async function getArgs() {
+//   const mysql = require('mysql2/promise');
+//   const conn = await mysql.createConnection({ database: process.env.DB_NAME,
+//                                             host : process.env.DB_HOST,
+//                                             user : process.env.DB_USER,
+//                                             password: process.env.DB_PASSWORD,
+//                                             });
+//     try {
+//     const erts        = await conn.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC'); 
+//     const counties    = await conn.query('SELECT county_id AS number, name FROM counties'); 
+//     const methods     = await conn.query('SELECT ignition_method_id AS number, name FROM ignition_methods'); 
+//     const agencies    = await conn.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC'); 
+//     const fuelmods    = await conn.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types'); 
+//     const airsheds    = await conn.query('SELECT airshed_id AS number, name FROM airsheds'); 
+//     const objectives  = await conn.query('SELECT pre_burn_objective_preset_id AS number, name FROM pre_burn_objective_presets'); 
+//     } catch (err) {
+//     res.render("./projects/new", {
+//                 erts: erts, 
+//                 counties: counties, 
+//                 methods:methods, 
+//                 agencies:agencies, 
+//                 objectives:objectives, 
+//                 fuelmods: fuelmods, 
+//                 airsheds:airsheds
+//       });
+//     }
+//   }
+  
+//   getArgs();
+  
+// });
+  
+  
+//  these nested callbacks generate the needed arrays to pass to the template for the form drop-downs
+//  some of these not likely to change and could hard-codde in the HTML, such as county, but others might
+  
   db.query('SELECT emission_reduction_technique_id AS number, name FROM emission_reduction_techniques ORDER BY number DESC', function (error, erts) {
     if (error) throw error;
     db.query('SELECT county_id AS number, name FROM counties', function (error, counties) {
       if (error) throw error;
       db.query('SELECT ignition_method_id AS number, name FROM ignition_methods', function(error, methods) {
         if (error) throw error;
-        db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
+        db.query('SELECT agency_id AS number, agency AS name, display AS display FROM agencies ORDER BY name DESC', function(error, agencies) {
           if (error) throw error;
           db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
             if (error) throw error;
@@ -62,6 +99,7 @@ router.get("/projects/new", function(req, res){
                 objectives:objectives, 
                 fuelmods: fuelmods, 
                 airsheds:airsheds});
+                
               });
             });
           });
@@ -85,6 +123,7 @@ router.post("/projects", [
   check('elevation_high').not().isEmpty().isInt().withMessage('High elevation should be a number'),
   check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
   check('first_burn').not().isEmpty().withMessage('First burn date required'),
+  check("first_burn").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in YYYY-MM-DD format'),
   check('duration').not().isEmpty().isInt().withMessage('Duration should be a number'),
   check('ignition_method').not().isEmpty().isInt().withMessage('Ignition method required'),
   check('county_id').not().isEmpty().isInt().withMessage('County required'),
@@ -267,7 +306,7 @@ router.get("/projects/:id/edit", function(req, res) {
             if (error) throw error;
             db.query('SELECT ignition_method_id AS number, name FROM ignition_methods', function(error, methods) {
               if (error) throw error;
-              db.query('SELECT agency_id AS number, agency AS name FROM agencies ORDER BY name DESC', function(error, agencies) {
+              db.query('SELECT agency_id AS number, agency AS name, display AS display FROM agencies ORDER BY name DESC', function(error, agencies) {
                 if (error) throw error;
                 db.query('SELECT fuel_type_id AS number, fuel_type AS name FROM fuel_types', function(error, fuelmods) {
                   if (error) throw error;

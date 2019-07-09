@@ -34,7 +34,7 @@
                                     <select id="agency_id" name="agency_id">
                                         <% agencies.forEach(function(agency, i){ 
                                         var selected = ( burn[0].agency == agency.name ) ? "selected" : "";%> 
-                                        <option value="<%=agency.number%>" <%=selected%>><%=agency.name%></option>
+                                        <%if (agency.display==1) {%>  <option value="<%=agency.number%>"><%=agency.name%></option>  <%}%> 
                                         <% }) %>
                                     </select>
                                 </div>
