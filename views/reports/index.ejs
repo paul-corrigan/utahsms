@@ -1,0 +1,29 @@
+<!--INDEX TEMPLATE DAILY EMISSION REPORTS-->
+<!-------------------------------->
+
+<% include ../partials/header %>
+
+
+<div class="container">
+    <!--<header class="jumbotron">-->
+        <div class="container">
+            <H1>Daily Emission Reports</H1>
+<!--             <% var total = reports.length %> -->
+<!--             <p>There are <%=total%> emission reports in the system</p> -->
+            <p>
+            <span>
+            <a class="btn btn-outline-success btn-lg" href="/reports/new">Submit emission report</a>
+            <a class="btn btn-outline-secondary btn-lg" href="/">Back</a>
+            </span>
+            </p>
+        </div>
+    <!--</header>-->
+
+
+<!-- <% requests.forEach(function(burn){ %>
+    <li>
+        <%= burn.name%> - <%= burn.request_acres %> acres - <%=burn.date%>
+    </li>
+<% }) %> -->
+
+<% include ../partials/footer %>

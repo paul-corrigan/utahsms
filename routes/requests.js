@@ -57,8 +57,7 @@ router.post("/requests", [
   const errors = validationResult(req);
   
   if(!errors.isEmpty()) {
-        //console.log(errors.array());
-        //res.status(422).json({ errors: errors.array() });
+        
        res.render('./fail', {errors: errors.array()});  
     } else {
       

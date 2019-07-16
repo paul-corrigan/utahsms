@@ -134,13 +134,25 @@
                                 <div class="form-group">
                                         <label for="ert">Emissions Reduction Technique</label>    
                                         <select id="ert" name="ert">
-                                            <% erts.forEach(function(ert, i){ %>
-                                            <option value="<%=ert.number%>"><%=ert.name%></option>
+                                            <% erts.forEach(function(ert, i){ 
+                                              var selected = ( burn[0].ert == ert.name ) ? "selected" : "";%>
+                                              <option value="<%=ert.number%>"><%=selected%><%=ert.name%></option>
                                             <% }) %>   
                                         </select>
                                 </div>
                             </div>
-                            
+                          
+                            <div class="form-group d-flex flex-column">
+                                        <label for="objectives">Objectives</label> 
+                                        <select data-placeholder="Choose all that apply" multiple class="chosen-select" name="objectives">
+                                            <!--<option disabled selected value> -- select all that apply -- </option>-->
+                                            <% objectives.forEach(function(objective, i){ %>
+                                            <option value="<%=objective.number%>"><%=objective.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
+                          
+                          
                             <div class="form-group">
                                 <label for "first_burn">Earliest Burn Date: </label>
                                 <input type="date" class="form_control" name="first_burn" value="<%=date%>">

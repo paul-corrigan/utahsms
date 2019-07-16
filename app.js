@@ -43,14 +43,21 @@ var projectRoutes = require('./routes/projects'),
 //use express
 var app = express();
 
+// path allows any combo of / and \ to work on both windows and unix 
+var path = require('path');
+
 // add the bootstrap script
-app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
-
-// add jquery
-app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
-
+app.use('/bootstrap', express.static(path.join(__dirname + '/node_modules/bootstrap/dist/')));
+// add chosen
+app.use('/chosen',    express.static(path.join(__dirname + '/node_modules/chosen/')));
+// add jquery & jqueryui
+app.use('/jquery',    express.static(path.join(__dirname + '/node_modules/jquery/dist/')));
+app.use('/jqueryui',    express.static(path.join(__dirname + '/node_modules/jqueryui/')));
 // add mapboxgl
-app.use('/mapbox-gl', express.static(__dirname + '/node_modules/mapbox-gl/dist/'))
+app.use('/mapbox-gl', express.static(path.join(__dirname + '/node_modules/mapbox-gl/dist/')));
+// point to static & public
+app.use('/static',    express.static(path.join(__dirname + '/static')))
+app.use('/public',    express.static(path.join(__dirname + '/public')))
 
 //tell express to assume .ejs extension to render route template files
 app.set("view engine", "ejs");
@@ -99,7 +106,7 @@ app.use(methodOverride("_method"));
 
 
 
-//create logged in object - can't seem to access this
+//create logged in object - can't seem to access this in routes?
 app.use(function(req, res, next){
   res.locals.user = req.session.user;
   next();
@@ -155,13 +162,20 @@ passport.use(new LocalStrategy(
 // HOME PAGE
 app.get("/", function(req, res){
     if (req.isauthenticated) {console.log(req.session.passport.user.user_email)}
+    
+    //shows the root folder for favicons, etc.
+//     var appDir = path.dirname(require.main.filename);
+//     console.log('main.filename: ' + appDir);
+//     console.log(path.dirname(process.mainModule.filename));
+  
   //  console.log(req.session);
     res.render("home", { username: req.user });
 });
 
+
+//MAP PAGE 
 app.get("/map", function(req, res){
 
-//directs to the new request form
     res.render("map");
 });
 

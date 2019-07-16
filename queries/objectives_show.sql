@@ -1,4 +1,4 @@
-SELECT  pre_burn_objective_presets.name AS objective
+SELECT DISTINCT pre_burn_objective_presets.name AS name
 FROM pre_burn_objectives
 INNER Join pre_burn_objective_presets
 ON pre_burn_objectives.pre_burn_objective_preset_id=pre_burn_objective_presets.pre_burn_objective_preset_id

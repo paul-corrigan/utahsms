@@ -2,6 +2,7 @@ SELECT  burn_project_id,
         project_name AS 'name', 
         -- users.full_name AS 'submitted_by',
         project_acres,
+        first_burn,
         submitted_on
 FROM burn_projects
 -- JOIN users

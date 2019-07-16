@@ -1,0 +1,48 @@
+<% include ../partials/header %>
+    
+    <div class="container">
+                <form method="post" action="/projects">
+                  <div class="d-flex justify-content-around">
+                      <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                      <button type="submit" class="btn btn-success">Submit</button>
+                      
+                  </div>
+                    
+                    <div class="card b-3 border justify-content-around mx-auto">
+                        <H3 class="card-title">Register a new burn</H3>
+                        <div class="card-body">
+                            
+                            <div class="d-flex flex-column justify-content-between">
+                              
+                              <div class="form-group d-flex flex-column">
+                                    <label for="county_id">County</label>    
+                                    <select id="county_id" name="county_id">
+                                        <option disabled selected value> -- select an option -- </option>
+                                        <% counties.forEach(function(county, i){ %>
+                                        <option value="<%=county.number%>"><%=county.name%></option>
+                                        <% }) %>   
+                                    </select>
+                                </div>
+                              
+                              <div class="form-group d-flex flex-column">
+                                        <label for="ert">Emission reduction technique</label> 
+                                        <select id="ert" name="ert">
+                                            <option disabled selected value> -- select an option -- </option>
+                                            <% erts.forEach(function(ert, i){ %>
+                                            <option value="<%=ert.number%>"><%=ert.name%></option>
+                                            <% }) %>   
+                                        </select>
+                                </div>
+                              
+                             </div>
+                        </div>
+                    <div class="d-flex justify-content-around">
+                      <button type="submit" class="btn btn-success">Submit</button>
+                        <div>
+                        <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>                            

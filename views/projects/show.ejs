@@ -38,7 +38,7 @@
             <p>Fuel Model: <%=burn[0].fuel_model%></p>
             <%  let firstTime = burn[0].first_burn;
                 // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
-                var first_date= moment(firstTime).subtract(7, 'hours').format('MMMM D YYYY');%>
+                var first_date= moment(firstTime).format('MMMM D YYYY');%>
             <p>Earliest date: <%=first_date%></p>
             
             <p>Ignition method: <%=burn[0].method%></p>
