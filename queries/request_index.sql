@@ -1,4 +1,5 @@
-SELECT  SUBSTRING(burn_projects.project_name,1,20) AS 'name',
+SELECT  burn_id,
+        SUBSTRING(burn_projects.project_name,1,40) AS 'name',
         SUBSTRING(burns.submitted_on,1,10) AS 'date',
         request_acres
 FROM burns

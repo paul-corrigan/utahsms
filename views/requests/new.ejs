@@ -3,13 +3,13 @@
 <div class="container">
   <form method="post" action="/requests">
       <div class="card b-3 border justify-content-around mx-auto">
-          <H3 class="card-title">Register a new burn</H3>
+          <H3 class="card-title">Request a burn window</H3>
           <div class="card-body">
 
               <div class="d-flex flex-column justify-content-between">
 
                   <div class="form-group d-flex flex-column">
-                      <label for="burn_project">Burn</label>    
+                      <label for="burn_project">Choose Burn Project:</label>    
                       <select id="burn_project" name="burn_project">
                           <option disabled selected value> -- select an option -- </option>
                           <% projects.forEach(function(project, i){ %>
@@ -23,12 +23,18 @@
                       <input type="number" id="acres" class="form-control" name="size">
                   </div>
 
+                  <div >Burn Window</div>
+                  
                   <div class="form-group">
-                      <label for="burn_window">Burn Window: </label>
-                      <input type="date" id="start_date" class="form-control" name="start_date">
-                      <br>
-                      <input type="date" id="end_date" class="form-control" name="end_date">
+                      <label for="start_date">From:</label>  
+                      <input type="text" class="form-control datepicker" id="from" name="start_date">
                   </div>
+                
+                  <div class="form-group">
+                      <label for="end_date">Through:</label>  
+                      <input type="text" class="form-control datepicker" id="to" name="end_date">
+                  </div>
+                    
                  
               </div>
               <div class="d-flex justify-content-around">
@@ -41,6 +47,6 @@
       </div>
   </form>
 </div>
-    
 
+<script src ="/public/js/newRequest.js"></script>
 <% include ../partials/footer %>

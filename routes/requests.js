@@ -27,7 +27,7 @@ router.get("/requests", function(req, res){
         if (error) throw error;
         
         //if no error pass the result and render the burn request.ejs template
-        res.render("./requests/index", {requests: results});
+        res.render("./requests/index", {requests: results, moment: moment});
       });
     });
 });
@@ -61,10 +61,10 @@ router.post("/requests", [
        res.render('./fail', {errors: errors.array()});  
     } else {
       
-      console.log(req.body.burn_project);
+//       console.log(req.body.burn_project);
       //use js to create current SQL timestamp for insertion into the db  
       var d = new Date();
-      var sqlDate = Date().toISOString().split('T')[0]+' '+d.toTimeString().split(' ')[0];
+      var sqlDate = d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
       var newReq = {
 
             //burn_project_id:req.body.burn_id,

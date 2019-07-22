@@ -147,17 +147,19 @@
                                         <select data-placeholder="Choose all that apply" multiple class="chosen-select" name="objectives">
                                             <!--<option disabled selected value> -- select all that apply -- </option>-->
                                             <% objectives.forEach(function(objective, i){ %>
-                                            <option value="<%=objective.number%>"><%=objective.name%></option>
+<!--                                             var selected = (burnObjectives.includes(objective)) ? "selected" : ""; -->
+                                          
+                                            <option value="<%=objective.number%>"<%=objective.name%></option>
                                             <% }) %>   
                                         </select>
                                 </div>
                           
+                           <div class="form-group d-flex flex-column">
+                                <label for="first_burn">Earliest Burn Date: </label>
+                                <input type="text" class="datepicker" name="first_burn" value="<%=date%>"> 
+                           </div>
                           
-                            <div class="form-group">
-                                <label for "first_burn">Earliest Burn Date: </label>
-                                <input type="date" class="form_control" name="first_burn" value="<%=date%>">
-                            </div>
-                            
+                                                        
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-success">Submit</button>
                                 <div>
@@ -174,4 +176,6 @@
             </div>
         </div>
     </div>
+
+<script src ="/public/js/newProject.js"></script>
 <% include ../partials/footer %>

@@ -74,6 +74,30 @@ input[type=date] ::-webkit-calendar-picker-indicator {
     margin-left: auto;
 }
 
+img {
+
+ 
+}
+
+#mainPage {
+  background: url("/static/medSmokeOwl.png") no-repeat 90% 10%;
+  
+/*   -webkit-background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  -o-background-size: 100% 100%;
+  background-size: 100% 100%;
+ */
+}
+
+
+.main-fill {
+  height: 1000px;
+}
+
+.error {
+  color: red;
+}
+
 /*input[type=number] {*/
 /*  width: 8rem;*/
 /*}*/

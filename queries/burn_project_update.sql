@@ -14,5 +14,5 @@ SET project_acres=?,
     ignition_method=?,
     county=?,
     burn_type=?,
-    submitted_on=?
+    updated_on=?
 WHERE burn_project_id=?

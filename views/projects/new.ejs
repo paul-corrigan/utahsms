@@ -1,7 +1,7 @@
 <% include ../partials/header %>
     
     <div class="container">
-                <form method="post" action="/projects">
+                <form method="post" id="newProjectForm" action="/projects">
                 
                     
                       <div class="card b-3 border justify-content-around mx-auto">
@@ -144,8 +144,7 @@
                             
                                 <div class="form-group d-flex flex-column">
                                     <label for="first_burn">Earliest Burn Date: </label>
-                                    <input type="text" id="datepicker" name="first_burn" > 
-<!--                                     <input type="date" class="form_control date" name="first_burn">  -->
+                                    <input type="text" class="datepicker" name="first_burn" > 
                                 </div>
                                 
                             </div>
@@ -161,11 +160,6 @@
             </div>
         </div>
     </div>
-<!-- <script>
-  $( function() {
-    $( "#datepicker" ).datepicker();
-  } );
-</script>  -->
 
 <script src ="/public/js/newProject.js"></script>
 <% include ../partials/footer %>

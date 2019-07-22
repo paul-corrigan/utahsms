@@ -50,9 +50,10 @@ var path = require('path');
 app.use('/bootstrap', express.static(path.join(__dirname + '/node_modules/bootstrap/dist/')));
 // add chosen
 app.use('/chosen',    express.static(path.join(__dirname + '/node_modules/chosen/')));
-// add jquery & jqueryui
+// add jquery etc
 app.use('/jquery',    express.static(path.join(__dirname + '/node_modules/jquery/dist/')));
 app.use('/jqueryui',    express.static(path.join(__dirname + '/node_modules/jqueryui/')));
+app.use('/tablesorter',    express.static(path.join(__dirname + '/node_modules/tablesorter/dist/')));
 // add mapboxgl
 app.use('/mapbox-gl', express.static(path.join(__dirname + '/node_modules/mapbox-gl/dist/')));
 // point to static & public
@@ -175,7 +176,6 @@ app.get("/", function(req, res){
 
 //MAP PAGE 
 app.get("/map", function(req, res){
-
     res.render("map");
 });
 
