@@ -1,4 +1,5 @@
-<!--INDEX TEMPLATE DAILY EMISSION REPORTS-->
+<!-- EMISSION REPORTS-->
+<!-- INDEX TEMPLATE -->
 <!-------------------------------->
 
 <% include ../partials/header %>
@@ -8,8 +9,8 @@
     <!--<header class="jumbotron">-->
         <div class="container">
             <H1>Daily Emission Reports</H1>
-<!--             <% var total = reports.length %> -->
-<!--             <p>There are <%=total%> emission reports in the system</p> -->
+            <% var total = reports.length %>
+            <p>There are <%=total%> emission reports in the system</p>
             <p>
             <span>
             <a class="btn btn-outline-success btn-lg" href="/reports/new">Submit emission report</a>
@@ -19,11 +20,39 @@
         </div>
     <!--</header>-->
 
-
-<!-- <% requests.forEach(function(burn){ %>
-    <li>
-        <%= burn.name%> - <%= burn.request_acres %> acres - <%=burn.date%>
-    </li>
-<% }) %> -->
+    <table class="table table-striped tablesorter tablesorter-bootstrap" id="sortableTable">
+        <thead>
+            <tr>
+              <th scope="col">Project Name</th>
+              <th scope="col">Agency</th>
+              <th scope="col">Completed Acres</th>
+              <th scope="col">Burn Date</th>
+              
+            </tr>
+        </thead>
+      
+        <tbody>
+            
+            <% reports.forEach(function(report, i){ %>
+                <tr>
+                    <td scope="row">
+                        <a href="/requests/<%=report.id%>">
+                            <%= report.name %>
+                        </a>
+                    </td>
+                    <td scope="row"><%= report.agency%></td>
+                    <td scope="row"><%= report.acres%></td>
+                    <td scope="row"><%= report.start_datetime.toString().substring(0,15)%></td>
+                              
+                </tr>        
+                    
+            <% }) %>
+            
+        </tbody>
+    </table>
+    
+    
+</div>
+<script src ="/public/js/table.js"></script>
 
 <% include ../partials/footer %>

@@ -17,17 +17,19 @@
             <span>
             <a class="btn btn-outline-success btn-lg" href="/projects/new">Register New Burn</a>
             <a class="btn btn-outline-secondary btn-lg" href="/">Back</a>
+              
             </span>
             </p>
         </div>
     <!--</header>-->
-
-    <table class="table table-striped tablesorter tablesorter-bootstrap" id="sortableTable">
+<!--tablesorter tablesorter-bootstrap-->
+    <table class="table table-striped " id="sortableTable">
         <thead>
             <tr>
               <th scope="col">Project Name</th>
-              <th scope="col">Size</th>
-              <th scope="col">Submitted</th>
+              <th scope="col">Agency</th>
+              <th scope="col">Acres</th>
+              <th scope="col" id="dateCol">Submitted</th>
               
             </tr>
         </thead>
@@ -41,19 +43,21 @@
                             <%= burn.name.substring(0,30) %>
                         </a>
                     </td>
+                    <td scope="row" id="search-agency"><%= burn.agency %></td>
                     <td scope="row"><%= burn.project_acres%></td>
                     <%  let utcTime = burn.submitted_on;
                         // during DST local_date will be an hour off, but can't for the life of me get moment.local() to work right
-                        var local_date= moment(utcTime).subtract(7, 'hours').format('MMM D YYYY h:mm a');%>
-                    <td scope="row"><%= local_date %></td>
+                        var local_date= moment(utcTime).subtract(2, 'hours').format('MMM D YYYY h:mm a');%>
+                  
+                  
+                    <td scope="row" id="dateDisplay"><%= burn.submitted_on.toString().substring(0,15) %></td>
                               
                 </tr>        
                     
             <% }) %>
             
         </tbody>
-    </table>
-    
+    </table>  
     
 </div>
 <script src ="/public/js/table.js"></script>

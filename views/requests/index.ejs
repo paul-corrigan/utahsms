@@ -23,8 +23,9 @@
         <thead>
             <tr>
               <th scope="col">Project Name</th>
+              <th scope="col">ID</th>
               <th scope="col">Requested Acres</th>
-              <th scope="col">Submitted</th>
+              <th scope="col">Window</th>
               
             </tr>
         </thead>
@@ -38,11 +39,14 @@
                             <%= request.name %>
                         </a>
                     </td>
+                    <td scope="row"><%= request.burn_id%></td>
                     <td scope="row"><%= request.request_acres%></td>
-                    <%  let utcTime = request.date;
+                    <%  let startDate = request.start;
+                        let endDate   = request.end;
                         // during DST local_date will be an hour off, but can't for the life of me get moment.local() to work right
-                        var local_date= moment(utcTime).subtract(7, 'hours').format('MMM D YYYY h:mm a');%>
-                    <td scope="row"><%= local_date %></td>
+                        var parsedStart= moment(startDate).format('MMM Do');
+                        var parsedEnd  = moment(endDate).format('MMM Do YYYY');%>
+                    <td scope="row"><%= parsedStart %> - <%= parsedEnd %></td>
                               
                 </tr>        
                     

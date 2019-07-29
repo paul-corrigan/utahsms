@@ -53,7 +53,9 @@ app.use('/chosen',    express.static(path.join(__dirname + '/node_modules/chosen
 // add jquery etc
 app.use('/jquery',    express.static(path.join(__dirname + '/node_modules/jquery/dist/')));
 app.use('/jqueryui',    express.static(path.join(__dirname + '/node_modules/jqueryui/')));
+app.use('/dynatable',    express.static(path.join(__dirname + '/node_modules/jquery/dynatable/')));
 app.use('/tablesorter',    express.static(path.join(__dirname + '/node_modules/tablesorter/dist/')));
+app.use('/datatables',    express.static(path.join(__dirname + '/node_modules/jquery/datatables/')));
 // add mapboxgl
 app.use('/mapbox-gl', express.static(path.join(__dirname + '/node_modules/mapbox-gl/dist/')));
 // point to static & public
@@ -117,6 +119,7 @@ app.use(function(req, res, next){
 app.use(projectRoutes);
 app.use(requestRoutes);
 app.use(userRoutes);
+app.use(reportRoutes);
 //app.use(reportRoutes); //for daily burn report form, not yet active 
 
 // set up local strategy for passport for user auth

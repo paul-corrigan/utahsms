@@ -1,0 +1,90 @@
+<!-- REQUEST SHOW TEMPLATE -->
+<% include ../partials/header %>
+
+
+
+<div class="container">
+    <header class="jumbotron m5">
+    <div class="container">
+            <h2 class="display-4"><%=request[0].name%></h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+              
+<!--       ADD LOGIC HERE TO HAVE APPROVAL BUTTON IF          -->
+              
+                <form method="POST" action="/projects/<%=request[0].burn_id%>?_method=DELETE">
+                    <a class="btn btn-primary btn-lg w-75" href="/requests">Back </a>
+                    <br><br>
+                    <a class="btn btn-warning btn-lg w-75" href="/requests/<%=request[0].burn_id%>/edit">Edit </a>
+                    <br><br>
+                    <button id="delete-button" class="btn btn-danger btn-lg w-75" >Delete</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <p>Request Status: <%=request[0].status%> </p>
+            <p>This request is for <%=request[0].request_acres%> acre(s), out of <%=request[0].project_acres%> total project acres</p>
+            <p>Submitted by: <%=request[0].submitter%></p>
+            <p>Agency: <%=request[0].agency%></p>
+            <%  let subTime = request[0].submitted_on;
+                // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                var sub_date= moment(subTime).subtract(7, 'hours').format('dddd, MMM D YYYY h:ss a');%>
+            <p>On: <%=sub_date%></p>
+            <p>County: <%=request[0].county%></p>
+            <p>Burn type: <%=request[0].type%></p>
+          
+            <%  let firstTime = request[0].start_date;
+                // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                var first_date= moment(firstTime).format('MMMM D YYYY');%>
+            <p>Start date: <%=first_date%></p>
+          
+            <%  let lastTime = request[0].end_date;
+                // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                var last_date= moment(lastTime).format('MMMM D YYYY');%>
+            <p>End date: <%=last_date%></p>
+            
+            <!--Logic to show the booleans -->
+            
+            <%if(request[0].class_1 === 0) {%>
+                <p>Class 1: No</p>
+            <%} else { %>
+                <p>Class 1: Yes</p>
+            <% } %>
+           
+            <%if(request[0].de_minimis === 0) {%>
+                <p>De minimis: No</p>
+            <%} else { %>
+                <p>De minimis: Yes</p>
+            <% } %>
+            
+            <%if(request[0].non_attainment === 0) {%>
+                <p>In non_attainment area: No</p>
+            <%} else { %>
+                <p>In non_attainment area: Yes</p>
+            <% } %>
+            
+            <!--Iterate through the reviews            -->
+            <hr>
+            <p><strong>Reviews</strong></p>
+            <% reviews.forEach(function(review, i){ %>
+                        <blockquote class="blockquote">
+                        <p class="mb-0"><%= review.comment%></p>
+                        <footer class="blockquote-footer"><%= review.name%>, <%= moment(review.added_on).subtract(7, 'hours').format('MMM D YYYY');%></footer>
+                        </blockquote>
+                        <br>
+            <% }) %>
+            
+        </div>
+
+    </div>
+    <div>
+        
+    </div>
+        
+</div>
+
+<% include ../partials/footer %>

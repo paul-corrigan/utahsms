@@ -1,6 +1,7 @@
 var express = require("express"),
     expressValidator= require('express-validator'), //validate user inputs server-side
-    expressSanitizer = require("express-sanitizer"); // sanitize scripts etc. from user input
+    expressSanitizer = require("express-sanitizer"), // sanitize scripts etc. from user input
+    middleware =        require('../middleware');     // some functions for user auth, etc.  
 const { check, validationResult } = require('express-validator/check');
 
 //node library to hash passwords - other options for this but going with bcrypt for now
@@ -21,9 +22,6 @@ var fs = require('fs');
 //date handling to make SQL inserts and selects easier
 var moment = require('moment');
 
-// can't seem to get this working right
-// var middlewares = require("../middlewares");
-// router.use(middlewares.isLoggedIn);
 
 // LOGIN 
 router.get('/login', function(req, res, next){
@@ -134,6 +132,20 @@ passport.serializeUser(function(user_id, done) {
 passport.deserializeUser(function(user_id, done) {
     done(null, user_id);
 });
+
+// function authenticationMiddleware () {
+//   return (req, res, next) => {
+//     console.log(`
+//       req.session.passport.user: ${JSON.
+//       stringify(req.session.passport)}`);
+//     if(req.isAuthenticated()) return next (
+//       );
+//     res.redirect('/login')
+//   }
+// }
+
+
+
 
 function isLoggedIn() {
   return (req, res, next) => {

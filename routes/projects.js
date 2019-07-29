@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router(),
-  expressValidator = require('express-validator'), //validate user inputs server-side
-  expressSanitizer = require("express-sanitizer"); // sanitize scripts etc. from user input
+    expressValidator =  require('express-validator'), //validate user inputs server-side
+    expressSanitizer =  require("express-sanitizer"), // sanitize scripts etc. from user input
+    middleware =        require('../middleware');     // some functions for user auth, etc.
 const {
   check,
   validationResult
@@ -22,10 +23,13 @@ var async = require('async');
 
 
 // INDEX OF BURN PROJECTS 
-router.get("/projects", function(req, res) {
+router.get("/projects", 
+//            middlewareObj.isLoggedIn (), 
+// implement page restriction last            
+           function(req, res) {
 
   //read the query file into variable called data
-  fs.readFile('queries/burn_project_index.sql', 'utf8', function(err, data) {
+  fs.readFile('queries/projects/index2.sql', 'utf8', function(err, data) {
     if (err) throw err;
 
     // if no error query the db return variable results
@@ -238,9 +242,9 @@ router.get("/projects/:id", function(req, res) {
 
   //This nesting of functions is needed because of the asynchronous node.js
 
-  fs.readFile('queries/burn_project_show.sql', 'utf8', function(err, projectquery) {
+  fs.readFile('queries/projects/show.sql', 'utf8', function(err, projectquery) {
     if (err) throw err;
-    fs.readFile('queries/burn_project_reviews.sql', 'utf8', function(err, reviewquery) {
+    fs.readFile('queries/projects/reviews.sql', 'utf8', function(err, reviewquery) {
       if (err) throw err;
       fs.readFile('queries/objectives_show.sql', 'utf8', function(err, objectivequery) {
         if (err) throw err;
@@ -456,5 +460,6 @@ router.delete("/projects/:id", function(req, res) {
     };
   });
 });
+
 
 module.exports = router;

@@ -1,3 +1,4 @@
+/* BURN PROJECT SHOW */
 SELECT  burn_project_id,
         project_name, 
         users.full_name AS 'submitter',

@@ -23,28 +23,76 @@ var async = require('async');
 //
 // INDEX of Daily Emission reports
 //
-router.get("/reports", function(req, res) {
-  res.render("./reports/index", {
-  });  
-  
+// INDEX BURN REQUESTS
+
+router.get("/reports", function(req, res){
+ 
+    //read the query file 
+    fs.readFile('queries/reports/index.sql', 'utf8', function(err, data) {  
+      if (err) throw err;
+      
+      // if no error query the db
+      db.query(data, function (error, results) {
+        if (error) throw error;
+        
+        //if no error pass the result and render the burn request.ejs template
+        res.render("./reports/index", {reports: results, moment: moment});
+      });
+    });
 });
 
+// NEW REQUEST
 
-//
-// NEW Daily Emission report form
-//
+// burn request form route (create only at the moment)
+router.get("/reports/new", function(req, res){
+      
+      db.query('SELECT burn_project_id AS number, project_name AS name, agency_id AS agency, district_id AS district FROM burn_projects ORDER BY name', function (error, projects) {
+        if (error) throw error;
+        //directs to the new request form
+        res.render("./reports/new", {projects:projects});
+      });
+});
 
+// CREATE posts a submitted burn request form to the db
+router.post("/requests", [
+  // server-side form validation
+  check('size').not().isEmpty().withMessage('Request acres is required'),
+  check("start_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in MM-DD-YYYY format'),
+  check("end_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in MM-DD-YYYY format'),
+  check('burn_project').not().isEmpty().isInt().withMessage('Must Select a Burn Project'),
+  ], function(req, res){
+  //
+  
+  const errors = validationResult(req);
+  
+  if(!errors.isEmpty()) {
+        
+       res.render('./fail', {errors: errors.array()});  
+    } else {
+      
+//       console.log(req.body.burn_project);
+      //use js to create current SQL timestamp for insertion into the db  
+      var d = new Date();
+      var sqlDate = d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
+      var newReq = {
 
+            //burn_project_id:req.body.burn_id,
+            burn_project_id:req.body.burn_project,
+            request_acres:  req.body.size,
+            start_date:     req.body.start_date,
+            end_date:       req.body.end_date,
+            submitted_on:   sqlDate
+        };
 
-//
-// CREATE Daily Emission report
-//
+        var end_result = db.query('INSERT INTO burns SET?', newReq, function(err, result) {
+          if (err) throw err;
+          res.redirect("/requests");
+        });
+    }
+});
 
+// SHOW details about selected burn request
 
-
-//
-// SHOW Daily Emission report
-//
 
 
 

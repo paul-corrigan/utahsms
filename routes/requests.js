@@ -19,7 +19,7 @@ var moment = require('moment');
 router.get("/requests", function(req, res){
  
     //read the query file 
-    fs.readFile('queries/request_index.sql', 'utf8', function(err, data) {  
+    fs.readFile('queries/requests/index.sql', 'utf8', function(err, data) {  
       if (err) throw err;
       
       // if no error query the db
@@ -72,7 +72,13 @@ router.post("/requests", [
             request_acres:  req.body.size,
             start_date:     req.body.start_date,
             end_date:       req.body.end_date,
-            submitted_on:   sqlDate
+            submitted_by:   17,
+            added_by:       17,
+            updated_by:     17,
+            added_on:       sqlDate,    
+            updated_on:     sqlDate,    
+            submitted_on:   sqlDate,
+            status_id:      2 // 1 draft, 2 under review, 3 revision requested, 4 pending approval, 5 approved, 6 disapproved
         };
 
         var end_result = db.query('INSERT INTO burns SET?', newReq, function(err, result) {
@@ -82,6 +88,49 @@ router.post("/requests", [
     }
 });
 
+// SHOW details about selected burn request
+router.get("/requests/:id", function(req, res) {
+  // Find the burn project with provided ID
+
+  //load the generic query to see all burn project details
+
+  //This nesting of functions is needed because of the asynchronous node.js
+
+  fs.readFile('queries/requests/show.sql', 'utf8', function(err, requestquery) {
+    if (err) throw err;
+    fs.readFile('queries/requests/reviews.sql', 'utf8', function(err, reviewquery) {
+      if (err) throw err;
+      
+
+        // query the db for burn request details and return array foundBurn
+        db.query(requestquery, req.params.id, function(error, foundRequest) {
+          if (error) throw error;
+          if (foundRequest[0] === undefined) {
+            const errors = [{
+              msg: 'No such burn exists'
+            }];
+            res.render('./fail', {
+              errors: errors
+            });
+          } else {
+
+            // query the db for reviewer comments and return array reviews
+            db.query(reviewquery, req.params.id, function(error, reviews) {
+              if (error) throw error;
+            
+                //if no error pass the request details, reviews, and momentjs to the ejs template
+                res.render("./requests/show", {
+                  request: foundRequest,
+                  reviews: reviews,
+                  moment: moment,
+                  
+                });
+             });            
+          };
+        });
+      });
+    });  
+});
 
 
 module.exports=router;
