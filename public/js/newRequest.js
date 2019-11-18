@@ -1,3 +1,7 @@
+$('.datepicker').on('focus', function(e) {
+   e.preventDefault();
+   $(this).attr("autocomplete", "off");  
+});
 
 
 // this bit of genius provided on jsFiddle by Tushar Gupta - not sure how else to thank him
@@ -45,3 +49,5 @@ $(document).ready(function () {
 //     });
 
 });
+
+

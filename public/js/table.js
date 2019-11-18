@@ -7,7 +7,8 @@
 $(document).ready( function () {
     $('#sortableTable').DataTable({
       "order" : [],
-      paging: false
+      paging: false,
+      
     });
 } );
 

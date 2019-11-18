@@ -1,0 +1,52 @@
+<!-- REQUEST EDIT TEMPLATE -->
+
+<% include ../partials/header %>
+
+<div class="container">
+  <form method="POST" action="/requests/<%= request[0].burn_id%>?_method=PUT">
+      <div class="card b-3 border justify-content-around mx-auto">
+          <H3 class="card-title">Editing <%= request[0].name%> burn request</H3>
+          <div class="card-body">
+
+              <div class="d-flex flex-column justify-content-between">
+
+                  <div class="form-group">
+                      <label for="acres">Requested Acres: </label>
+                      <input type="number" id="acres" class="form-control" name="size" value="<%=request[0].request_acres%>">
+                  </div>
+
+                  <div >Burn Window</div>
+                  
+                  <div class="form-group">
+                      <label for="start_date">From:</label>  
+                      <%  let firstTime = request[0].start_date;
+                      // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                      var first_date= moment(firstTime).format('YYYY-MM-DD');%>                     
+                      <input type="date" class="form-control" name="start_date" value="<%=first_date%>">
+<!--                       <input type="text" class="form-control datepicker" id="from" name="start_date" value="<%=first_date%>"> -->
+                  </div>
+                
+                  <div class="form-group">                      
+                      <label for="end_date">Through:</label>  
+                      <%  let lastTime = request[0].end_date;
+                      // dates during DST may be an hour off, but can't for the life of me get moment.local() to work right
+                      var last_date= moment(lastTime).format('YYYY-MM-DD');%>          
+                      <input type="date" class="form-control" name="end_date" value="<%=last_date%>">
+<!--                       <input type="text" class="form-control datepicker" id="to" name="end_date" value="<%=last_date%>"> -->
+                  </div>
+                    
+                 
+              </div>
+              <div class="d-flex justify-content-around">
+                <button type="submit" class="btn btn-success">Update</button>
+                <div>
+
+                <a class="btn btn-danger" name="cancel" href="/requests">Cancel</a>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+
+<script src ="/public/js/newRequest.js"></script>
+<% include ../partials/footer %>

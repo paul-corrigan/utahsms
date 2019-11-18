@@ -3,6 +3,8 @@ body {
     
 }
     
+
+
 .checkboxes label {
   display: block;
   padding-left: 15px;
@@ -96,6 +98,10 @@ img {
 
 .error {
   color: red;
+}
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
 }
 
 /*input[type=number] {*/

@@ -1,42 +1,115 @@
-<!-- CREATE template daily emission report -->
+<!-- New daily emission report template-->
 
 <% include ../partials/header %>
 
 <div class="container">
   <form method="post" action="/requests">
       <div class="card b-3 border justify-content-around mx-auto">
-          <H3 class="card-title">Report prescribed fire activity and emissions</H3>
+          <H3 class="card-title">Report your prescribed fire activity and emissions</H3>
           <div class="card-body">
 
               <div class="d-flex flex-column justify-content-between">
 
                   <div class="form-group d-flex flex-column">
-<!--                       <label for="burn_project">Burn</label>    
+                      <label for="burn_project">Burn</label>    
                       <select id="burn_project" name="burn_project">
                           <option disabled selected value> -- select an option -- </option>
                           <% projects.forEach(function(project, i){ %>
                           <option value="<%=project.number%>"><%=project.name%></option>                                   
                           <% }) %>
-                      </select> -->
+                      </select>
                   </div>
-
+                  
                   <div class="form-group">
-                      <label for="acres">Requested Acres: </label>
-                      <input type="number" id="acres" class="form-control" name="size">
+                      <label for="igdate">Ignition Date</label>
+                      <input type="text" id="igdate" class="form-control datepicker" name="igdate">
                   </div>
-
+                
+                   <div class="form-group">                   
+                    </div>
+                  
                   <div class="form-group">
-                      <label for="burn_window">Burn Window: </label>
-                      <input type="date" id="start_date" class="form-control" name="start_date">
-                      <br>
-                      <input type="date" id="end_date" class="form-control" name="end_date">
+                      <label for="start_time">Ignition Start Time</label>
+                      <input type="text" id="start_time" class="timepicker" name="start_time">
+                      <span>        </span>
+                      <label for="end_time">Ignition End Time</label>
+                      <input type="text`" id="end_time" class="timepicker" name="end_time">  
                   </div>
-                 
+                
+                    <div class="form-group">                   
+                    </div>
+                                                  
+                   <div class="form-group d-flex flex-column">
+                        <label for="day_vent_id">Daytime Ventilation</label>
+                        <select id="day_vent_id" name="day_vent_id">
+                            <option disabled selected value> -- select an option -- </option>
+                            <option value=1>Poor</option>
+                            <option value=2>Fair</option>
+                            <option value=3>Good</option>
+                            <option value=4>Excellent</option>
+                        </select>
+                   </div>
+                
+                   <div class="form-group d-flex flex-column">
+                        <label for="night_smoke_id">Nighttime Ventilation (if observed)</label>
+                        <select id="night_smoke_id" name="night_smoke_id">
+                            <option disabled selected value> -- select an option -- </option>
+                            <option value=5>Unknown</option>
+                            <option value=1>Poor</option>
+                            <option value=2>Fair</option>
+                            <option value=3>Good</option>
+                            <option value=4>Excellent</option>
+                        </select>
+                   </div>
+                
+                   <div class="form-group d-flex flex-column">
+                        <label for="public_interest_id">Public Interest Regarding Smoke</label>
+                        <select id="public_interest_id" name="public_interest_id">
+                            <option disabled selected value> -- select an option -- </option>
+                            <option value=1>None</option>
+                            <option value=2>Slight Interest</option>
+                            <option value=3>Moderate Interest</option>
+                            <option value=4>Significant Interest</option>
+                            <option value=5>Extreme Interest</option>
+                        </select>
+                   </div>
+                                                  
+                  <div class="form-group">
+                      <label for="state_comment">Comments on Burn and Effectiveness of Emission Reduction Techniques</label>
+                    <textarea type="text" id="state_comment" class="form-control" name="state_comment" rows="3"></textarea>
+                  </div>
+                
+                  <div class="form-group">
+                      <label for="target_acres">Acres reported for target/dispatch</label>
+                      <input type="text" id="target_acres" class="form-control" name="target_acres">
+                  </div>
+                
+                  <div class="form-group">
+                      <label for="emission_rows"><strong>Black</strong> Acres or burned piles info</label>  
+                      <div class="multi-field-wrapper">
+                        <div class="multi-fields">
+                          <div class="multi-field">
+                            <input type="number" name="stuff[]"> black acres of fuel model  
+                            <select id="fuel_model" name="major_fbps_fuel">
+                              <option disabled selected value> -- select an option -- </option>
+                              <% fuelmods.forEach(function(model, i){ %>
+                                  <option value="<%=model.number%>"><%=model.name%></option>
+                                  <% }) %>   
+                            </select>
+                            <button type="button" class="remove-field">Remove</button>
+                          </div>
+                        </div>
+                        <button type="button" class="add-field">Add another fuel type</button>
+                      </div>
+                  </div>
+                
               </div>
               <div class="d-flex justify-content-around">
 <!--                 <button type="submit" class="btn btn-success">Submit</button> -->
                 <div>
-
+              
+                 
+                  
                 <a class="btn btn-danger" name="cancel" href="/reports">Cancel</a>
               </div>
           </div>
@@ -44,5 +117,5 @@
   </form>
 </div>
     
-
+<script src ="/public/js/newReport.js"></script>
 <% include ../partials/footer %>

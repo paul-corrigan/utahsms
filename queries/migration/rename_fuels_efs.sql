@@ -1,0 +1,1 @@
+RENAME TABLE fuels TO emission_factors;

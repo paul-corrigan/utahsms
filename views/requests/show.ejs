@@ -15,7 +15,7 @@
               
 <!--       ADD LOGIC HERE TO HAVE APPROVAL BUTTON IF          -->
               
-                <form method="POST" action="/projects/<%=request[0].burn_id%>?_method=DELETE">
+                <form method="POST" action="/requests/<%=request[0].burn_id%>?_method=DELETE">
                     <a class="btn btn-primary btn-lg w-75" href="/requests">Back </a>
                     <br><br>
                     <a class="btn btn-warning btn-lg w-75" href="/requests/<%=request[0].burn_id%>/edit">Edit </a>
@@ -86,5 +86,5 @@
     </div>
         
 </div>
-
+<script src ="/public/js/deleteConfirm.js"></script>
 <% include ../partials/footer %>

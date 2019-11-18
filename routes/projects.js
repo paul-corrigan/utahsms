@@ -121,7 +121,7 @@ router.post("/projects", [
   check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
   check('first_burn').not().isEmpty().withMessage('First burn date required'),
   check("first_burn").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in YYYY-MM-DD format'),
-  check('duration').not().isEmpty().isInt().withMessage('Duration should be a number'),
+  check('duration').not().isEmpty().isInt().withMessage('Expected burn days is required'),
   check('ignition_method').not().isEmpty().isInt().withMessage('Ignition method required'),
   check('county_id').not().isEmpty().isInt().withMessage('County required'),
   check('burn_type').not().isEmpty().isInt().withMessage('Burn Type required'),
@@ -287,7 +287,7 @@ router.get("/projects/:id", function(req, res) {
 //  EDIT a burn project
 
 router.get("/projects/:id/edit", function(req, res) {
-  fs.readFile('queries/burn_project_show.sql', 'utf8', function(err, projectquery) {
+  fs.readFile('queries/projects/show.sql', 'utf8', function(err, projectquery) {
     if (err) throw err;
     // query the db for burn request details and return array foundBurn
     db.query(projectquery, req.params.id, function(error, foundBurn) {
@@ -324,6 +324,9 @@ router.get("/projects/:id/edit", function(req, res) {
                           var truncDate = momentDate.format("YYYY-MM-DD");
                           if (error) throw error;
                           objectives.forEach(function(objective, i){
+                            
+                            // trying to work out some bugs on many-many update process with these console logs
+                            
                             console.log(objective);  
                             if (burnObjectives.some(e => e.number === objective.number)) {
                                 console.log('True');
@@ -356,6 +359,8 @@ router.get("/projects/:id/edit", function(req, res) {
     });
   });
 });
+
+
 // UPDATE BURN PROJECT
 
 router.put("/projects/:id", [
@@ -434,7 +439,7 @@ router.put("/projects/:id", [
       sqlDate,
       req.params.id
     ];
-    fs.readFile('queries/burn_project_update.sql', 'utf8', function(err, updateQuery) {
+    fs.readFile('queries/projects/update.sql', 'utf8', function(err, updateQuery) {
       if (err) throw err;
       db.query(updateQuery, updateArray, function(err, result) {
         if (err) {

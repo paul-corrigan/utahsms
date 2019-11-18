@@ -1,0 +1,1 @@
+delete from burns where start_date is NULL;

@@ -1,3 +1,5 @@
+<!-- PROJECT SHOW TEMPLATE -->
+
 <% include ../partials/header %>
 
 
@@ -7,11 +9,12 @@
     <div class="container">
             <h2 class="display-4"><%=burn[0].project_name%></h2>
     </div>
-    
-    <div class="row">
+      
+      <div class="row"> 
+        
         <div class="col-md-3">
             <div class="list-group">
-                <form method="POST" action="/projects/<%=burn[0].burn_project_id%>?_method=DELETE">
+                <form method="POST" id="deleteEtc" action="/projects/<%=burn[0].burn_project_id%>?_method=DELETE">
                     <a class="btn btn-primary btn-lg w-75" href="/projects">Back </a>
                     <br><br>
                     <a class="btn btn-warning btn-lg w-75" href="/projects/<%=burn[0].burn_project_id%>/edit">Edit </a>
@@ -89,5 +92,5 @@
     </div>
         
 </div>
-
+<script src ="/public/js/deleteConfirm.js"></script>
 <% include ../partials/footer %>

@@ -2,6 +2,11 @@ $( function() {
    $( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd'});
 } );
 
+$('.datepicker').on('focus', function(e) {
+   e.preventDefault();
+   $(this).attr("autocomplete", "off");  
+});
+
 $().ready(function() {
   //validate new project form on keyup and submit
   $("#newProjectForm").validate({

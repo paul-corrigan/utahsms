@@ -48,8 +48,8 @@ router.get("/requests/new", function(req, res){
 router.post("/requests", [
   // server-side form validation
   check('size').not().isEmpty().withMessage('Request acres is required'),
-  check("start_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in MM-DD-YYYY format'),
-  check("end_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in MM-DD-YYYY format'),
+  check("start_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in YYYY-MM-DD format'),
+  check("end_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in YYYY-MM-DD format'),
   check('burn_project').not().isEmpty().isInt().withMessage('Must Select a Burn Project'),
   ], function(req, res){
   //
@@ -65,8 +65,8 @@ router.post("/requests", [
       //use js to create current SQL timestamp for insertion into the db  
       var d = new Date();
       var sqlDate = d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
+      console.log(req.body.start_date);
       var newReq = {
-
             //burn_project_id:req.body.burn_id,
             burn_project_id:req.body.burn_project,
             request_acres:  req.body.size,
@@ -90,9 +90,9 @@ router.post("/requests", [
 
 // SHOW details about selected burn request
 router.get("/requests/:id", function(req, res) {
-  // Find the burn project with provided ID
+  // Find the burn request with provided ID
 
-  //load the generic query to see all burn project details
+  //load the generic query to see all burn request details
 
   //This nesting of functions is needed because of the asynchronous node.js
 
@@ -102,7 +102,7 @@ router.get("/requests/:id", function(req, res) {
       if (err) throw err;
       
 
-        // query the db for burn request details and return array foundBurn
+        // query the db for burn request details and return array foundRequest
         db.query(requestquery, req.params.id, function(error, foundRequest) {
           if (error) throw error;
           if (foundRequest[0] === undefined) {
@@ -130,6 +130,101 @@ router.get("/requests/:id", function(req, res) {
         });
       });
     });  
+});
+
+// EDIT burn request
+
+router.get("/requests/:id/edit", function(req, res) {
+  // Load the generic query to see all burn request details
+
+  // Find the burn request with provided ID
+
+  fs.readFile('queries/requests/show.sql', 'utf8', function(err, requestquery) {
+    if (err) throw err;
+    // query the db for burn request details and return array foundrequest
+    db.query(requestquery, req.params.id, function(error, foundrequest) {
+
+      if (error) throw error;
+      if (foundrequest[0] === undefined) {
+        const errors = [{
+          msg: 'No such burn exists'
+        }];
+        res.render('./fail', {
+          errors: errors
+        });
+      } else {
+        
+       //if no error pass the request details, reviews, and momentjs to the ejs template
+        res.render("./requests/edit", {
+          request: foundrequest,
+          moment: moment,
+        });
+      }
+    });
+  });
+});
+
+// UPDATE BURN REQUEST
+
+router.put("/requests/:id", [
+  // server-side form validation
+  check('size').not().isEmpty().withMessage('Request acres is required'),
+  check("start_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Start date must be in YYYY-MM-DD format'),
+  check("end_date").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('End date must be in YYYY-MM-DD format'),
+  
+  ], function(req, res) {
+  //
+  console.log(req.body.start_date);
+  console.log(req.body.end_date);
+  const errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    //res.status(422).json({ errors: errors.array() });
+    res.render('./fail', {
+      errors: errors.array()
+    });
+  } else {
+    
+    //use native js to create a mySQL date for insertion into the db  
+    var d = new Date();
+    var sqlDate = d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
+
+    // build an ARRAY to UPDATE burn_projects from form data
+    // Couldn't figure out how to use an object due to the 
+    // need to incorporate req.params.id in the WHERE clause
+    var updateArray = [
+      req.body.size,
+      req.body.start_date,
+      req.body.end_date,
+      sqlDate,
+      req.params.id
+    ];
+    fs.readFile('queries/requests/update.sql', 'utf8', function(err, updateQuery) {
+      if (err) throw err;
+      db.query(updateQuery, updateArray, function(err, result) {
+        if (err) {
+          throw err;
+        } else {
+          res.redirect("/requests/" + req.params.id);
+        }
+      });
+
+    });
+  }
+});
+
+// DELETE BURN PROJECT
+
+router.delete("/requests/:id", function(req, res) {
+  //
+  db.query('DELETE FROM burns WHERE burn_id=?', req.params.id, function(err, result) {
+    if (err) {
+      throw err;
+    } else {
+      res.redirect("/requests/");
+    };
+  });
 });
 
 
