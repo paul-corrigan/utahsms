@@ -82,8 +82,8 @@ img {
 }
 
 #mainPage {
-  background: url("/static/medSmokeOwl.png") no-repeat 90% 10%;
-  
+  background: url("/static/webLogo.png") no-repeat 80% 10%;
+  background-size: auto;
 /*   -webkit-background-size: 100% 100%;
   -moz-background-size: 100% 100%;
   -o-background-size: 100% 100%;
