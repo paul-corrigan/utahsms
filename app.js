@@ -15,6 +15,8 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var MySQLStore = require('express-mysql-session')(session);
 
+//extra comment
+
 //node framework to interface with mysql
 var mysql = require('mysql2/promise');
 
@@ -35,10 +37,12 @@ var moment = require('moment');
 var methodOverride = require('method-override');
 
 //modularize routes to clean up the app.js
+//need an app.use for each one of these, see below
 var projectRoutes = require('./routes/projects'),
     requestRoutes = require('./routes/requests'),
     userRoutes    = require('./routes/users'),
-    reportRoutes  = require('./routes/reports');
+    reportRoutes  = require('./routes/reports'),
+    mapRoutes     = require('./routes/maps')
 
 //use express
 var app = express();
@@ -116,10 +120,13 @@ app.use(function(req, res, next){
 });
 
 // use the required .js route files
+// these should match the var declaration near the top
 app.use(projectRoutes);
 app.use(requestRoutes);
 app.use(userRoutes);
 app.use(reportRoutes);
+app.use(mapRoutes);
+
 //app.use(reportRoutes); //for daily burn report form, not yet active 
 
 // set up local strategy for passport for user auth
@@ -177,10 +184,6 @@ app.get("/", function(req, res){
 });
 
 
-//MAP PAGE 
-app.get("/map", function(req, res){
-    res.render("map");
-});
 
 
 //lets you know the server is running

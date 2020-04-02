@@ -1,0 +1,74 @@
+<% include ../partials/mapheader %>
+
+<style>
+    .coordinates {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        position: absolute;
+        bottom: 40px;
+        left: 10px;
+        padding: 5px 10px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 18px;
+        border-radius: 3px;
+        display: none;
+    }
+</style>
+
+<div id='map'></div>
+<pre id="coordinates" class="coordinates"></pre>
+<script>
+
+    
+mapboxgl.accessToken = 'pk.eyJ1IjoicGNvcnJpZ2FuIiwiYSI6ImNrODBuaHZiczAxZXEzZm50ajJ1cmNmODAifQ.S2Ulj4k43LOsWREjSj4M6g';
+
+var coordinates = document.getElementById('coordinates');
+var map = new mapboxgl.Map({
+container: 'map',
+  style: 'mapbox://styles/pcorrigan/ck80nm4q20mr71iqj771bivp8?optimize=true',
+  center: [-111.5, 39.5],
+  zoom: 6
+});
+
+
+map.on('load', function() {
+// Add a GeoJSON source 
+// map.addSource('points', <%-JSON.stringify(mapPoints)%>)  
+    
+
+map.addSource('points', {
+	'type': 'geojson',
+	'data': <%-JSON.stringify(mapPoints)%>
+})
+	
+    
+// Add a symbol layer.
+map.addLayer({
+'id': 'symbols',
+'type': 'symbol',
+'source': 'points',
+'layout': {
+'icon-image': 'rocket-15'
+}
+});
+
+ 
+// Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
+map.on('click', 'symbols', function(e) {
+map.flyTo({ center: e.features[0].geometry.coordinates, zoom: 8});
+    
+});
+ 
+// Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
+map.on('mouseenter', 'symbols', function() {
+map.getCanvas().style.cursor = 'pointer';
+});
+ 
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'symbols', function() {
+map.getCanvas().style.cursor = '';
+});
+});
+</script>
+<% include ../partials/footer %>

@@ -39,3 +39,6 @@ npm-debug.log
 .DS_Store
 package-lock.json
 public/.DS_Store
+
+# git how-to because I forget sometimes
+gitInst.txt

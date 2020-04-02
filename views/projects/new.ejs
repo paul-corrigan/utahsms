@@ -1,7 +1,8 @@
 <!-- NEW PROJECT TEMPLATE -->
 
-<% include ../partials/header %>
-    
+<% include ../partials/mapheader %>
+
+
     <div class="container">
                 <form method="post" id="newProjectForm" action="/projects">
                 
@@ -16,8 +17,12 @@
                       <H3 class="card-title">Register a new burn</H3>
                         <div class="card-body">
                             
+                            
+                            
                             <div class="d-flex flex-column justify-content-between">
                                 
+                            
+                                    
                                 <div class="form-group">
                                     <label for="project_name">Project name: </label>
                                     <input type="text" id="project_name" class="form-control" name="project_name">
@@ -163,5 +168,4 @@
         </div>
     </div>
 
-<script src ="/public/js/newProject.js"></script>
 <% include ../partials/footer %>
