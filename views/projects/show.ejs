@@ -1,6 +1,6 @@
 <!-- PROJECT SHOW TEMPLATE -->
 
-<% include ../partials/header %>
+<% include ../partials/mapheader %>
 
 
 
@@ -12,7 +12,7 @@
       
       <div class="row"> 
         
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="list-group">
                 <form method="POST" id="deleteEtc" action="/projects/<%=burn[0].burn_project_id%>?_method=DELETE">
                     <a class="btn btn-primary btn-lg w-75" href="/projects">Back </a>
@@ -24,7 +24,7 @@
             </div>
         </div>
         
-        <div class="col-md-9">
+        <div class="col-md-4">
             <p>Acres: <%=burn[0].project_acres%></p>
             <p>Submitted by: <%=burn[0].submitter%></p>
             <p>Agency: <%=burn[0].agency%></p>
@@ -35,6 +35,8 @@
             <p>County: <%=burn[0].county%></p>
             <p>Airshed: <%=burn[0].airshed_id%></p>
             <p>Burn type: <%=burn[0].type%></p>
+            <p>Latitude: <%=burn[0].lat%></p>
+            <p>Longitude: <%=burn[0].lng%></p>
             <p>Low Elevation: <%=burn[0].elevation_low%></p>
             <p>High Elevation: <%=burn[0].elevation_high%></p>
             <p>Duration (days): <%=burn[0].duration%></p>
@@ -65,7 +67,17 @@
             <%} else { %>
                 <p>Non_attainment: Yes</p>
             <% } %>
-            
+            </div> <!-- col-md-3 (6 of 12)        -->
+            <div class="col-md-6">
+    
+                <div id='map'></div>
+          </div>
+        </div> <!-- row -->
+    <div class="row">
+         <div class="col-md-3">
+        </div>
+        <div class="col-md-9">
+                        
             <!--Iterate through the objectives            -->
             <hr>
             <p><strong>Objectives</strong></p>
@@ -73,7 +85,9 @@
                         <p class="mb-0"><%= objective.name%></p>
             <% }) %>
             
-            <!--Iterate through the reviews            -->
+            
+            
+             <!--Iterate through the reviews -->
             <hr>
             <p><strong>Reviews</strong></p>
             <% reviews.forEach(function(review, i){ %>
@@ -83,14 +97,22 @@
                         </blockquote>
                         <br>
             <% }) %>
-            
+          </div>
         </div>
+ 
 
-    </div>
-    <div>
-        
-    </div>
-        
 </div>
+
+ 
+
+<!-- this line allows the script "/maps/projects.js" to access the mapPoints location object-->
+<script>
+var geoJSON = <%-JSON.stringify(mapPoints)%>;
+var mapCenterLat = <%=burn[0].lat%>;
+var mapCenterLng = <%=burn[0].lng%>;
+</script> 
+
+<script src ="/public/js/maps/oneProject.js"></script>
+              
 <script src ="/public/js/deleteConfirm.js"></script>
 <% include ../partials/footer %>

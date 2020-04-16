@@ -24,21 +24,30 @@ var async = require('async');
 //
 var geoJSON = require('geojson');
 
+//MAP LIST PAGE
+router.get("/maps", function(req, res){
+    res.render("./maps/maps");
+});
 
 //MAP PAGE 1
-router.get("/map", function(req, res){
-    res.render("./maps/map");
+router.get("/maps/map1", function(req, res){
+    res.render("./maps/map1");
 });
 
 
 //MAP PAGE 3
-router.get("/map3", function(req, res){
+router.get("/maps/map3", function(req, res){
     res.render("./maps/map3");
+});
+
+//MAP PAGE 5
+router.get("/maps/map5", function(req, res){
+    res.render("./maps/map5");
 });
 
 
 //MAP PAGE 2
-router.get("/map2", function(req, res){
+router.get("/maps/map2", function(req, res){
     fs.readFile('queries/maps/all_projects.sql', 'utf8', function(err, data) {
     if (err) throw err;
 
@@ -57,8 +66,8 @@ router.get("/map2", function(req, res){
     
 });
 
-//MAP PAGE 2
-router.get("/map4", function(req, res){
+//MAP PAGE 4
+router.get("/maps/map4", function(req, res){
     fs.readFile('queries/maps/all_projects.sql', 'utf8', function(err, data) {
     if (err) throw err;
 
@@ -67,7 +76,7 @@ router.get("/map4", function(req, res){
           if (error) throw error;
             var mapPoints = geoJSON.parse(results, {Point: ['lat','lng']});
             //console.log(mapPoints);
-			console.log(JSON.stringify(mapPoints));
+			
             res.render("./maps/map4",{mapPoints:mapPoints
 
             });

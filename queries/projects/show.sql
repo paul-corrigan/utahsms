@@ -16,7 +16,9 @@ SELECT  burn_project_id,
         burn_pile_types.name as 'type',
         ignition_methods.name as 'method',
         major_fbps_fuel AS 'fuel_model',
-        counties.name AS 'county'
+        counties.name AS 'county',
+        lat,
+        lng
 FROM burn_projects
 JOIN users 
 ON users.user_id=burn_projects.submitted_by

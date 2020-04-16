@@ -1,0 +1,72 @@
+<% include ../partials/mapheader %>
+
+    <style>
+      #mapdiv {
+        height:100vh;
+      }
+      .marker {
+        background-image: url('/mapbox/fireicon.png');
+        background-size: cover;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    </style>
+
+    <div class="row">
+        <div id="side-bar" class="col-md-3">
+            
+            <form>
+                <div class="form-group row">
+                </div>
+                <div class="form-group row">
+                    <label for="dropDownWindDirection" class="col-sm-4 col-form-label">Wind Direction</label>
+             
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputWindSpeed" class="col-sm-4 col-form-label">Wind Speed (mph)</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputWindSpeed" placeholder="5">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-4">
+                        <br>
+                    </div>
+                    <div class="col-sm-4">
+                        <a class="btn btn-outline-secondary btn-lg" href="javascript:history.back()">Back</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="mapdiv" class="col-md-9"></div>
+    </div>
+
+
+
+    <pre id="coordinates" class="coordinates"></pre>
+
+
+
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoicGNvcnJpZ2FuIiwiYSI6ImNrODBuaHZiczAxZXEzZm50ajJ1cmNmODAifQ.S2Ulj4k43LOsWREjSj4M6g';
+
+        var map = new mapboxgl.Map({
+            container: 'mapdiv',
+            style: 'mapbox://styles/pcorrigan/ck80nm4q20mr71iqj771bivp8?optimize=true',
+            center: [-111.5, 39.5],
+            zoom: 6
+        });
+
+        var click = document.getElementById('click'),
+            mousemove = document.getElementById('mousemove');
+
+        map.on('mousemove click', function(e) {
+            window[e.type].innerHTML = e.containerPoint.toString() + ', ' + e.latlng.toString();
+        });
+    </script>
+
+<% include ../partials/footer %>

@@ -13,7 +13,7 @@ join users u
 on u.user_id = p.added_by
 join burn_projects b
 on b.burn_project_id = p.burn_project_id
-where year = 2020 and p.status_id = 4
+where p.status_id = 4
 /* order by project_name */
 /* select 
     YEAR(start_datetime) as Year,

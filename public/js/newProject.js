@@ -16,6 +16,16 @@ $().ready(function() {
       burn_type: "required",
       agency_id: "required",
       county_id: "required",
+      inputLat: {
+          required: true,
+          min: 0,
+          max: 90
+      },
+       inputLong: {
+          required: true,
+          min: -180,
+          max: 0
+      },    
       airshed_id: "required",
       fuel_model: "required",
       ignition_method: "required",
@@ -30,6 +40,8 @@ $().ready(function() {
     messages: {
       project_name: "Please enter a project name",
       project_acres: "Please enter project acres",
+      inputLat: "Please enter valid project latitude, 0-90",
+      inputLong: "Please enter valid negative longitude",
       burn_type: "Select a burn type",
       agency_id: "Select an agency",
       county_id: "Select a county",

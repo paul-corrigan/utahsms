@@ -2,7 +2,11 @@
 
 <% include ../partials/mapheader %>
 
-
+<style>
+    #mapdiv {
+        height: 100vh;
+    }
+</style>
     <div class="container">
                 <form method="post" id="newProjectForm" action="/projects">
                 
@@ -41,7 +45,27 @@
                                         <option value=5>Piles</option>
                                     </select>
                                 </div>
-                             
+                                
+                                <div class="form-group d-flex flex-column">
+                                Drag the marker to your burn location:
+                                </div>
+                                
+                                 <div id="mapdiv" class="form-group"></div>
+                                
+                                
+                                <div class="input-group">                        
+                                   <label for="inputLat" class="col-sm-4 col-form-label">Latitude</label>
+                                   <input type="number" class="form-control" name="inputLat" id="inputLat" placeholder="39.5">
+                                   
+                                   <span class="input-group-addon">       </span>
+                                    
+                                   <label for="inputLong" class="col-sm-4 col-form-label">Longitude</label>
+                                   <input type="number" class="form-control" name="inputLong" id="inputLong" placeholder="-111.5"> 
+                                </div>
+                                
+                                
+                                
+                                
                                 <div class="form-group d-flex flex-column">
                                     <label for="agency_id">Agency</label>    
                                     <select id="agency_id" name="agency_id">
@@ -167,5 +191,6 @@
             </div>
         </div>
     </div>
-
+<script src ="/public/js/newProject.js"></script>
+<script src ="/public/js/maps/dragLatLong.js"></script>
 <% include ../partials/footer %>

@@ -21,6 +21,8 @@ var moment = require('moment');
 //stop nesting sequential functions
 var async = require('async');
 
+var geoJSON = require('geojson');
+
 
 // INDEX OF BURN PROJECTS 
 router.get("/projects", 
@@ -113,13 +115,16 @@ router.get("/projects/new", function(req, res) {
 
 router.post("/projects", [
   // server-side form validation
+  check('project_name').not().isEmpty().withMessage('Project Name is required'),
   check('agency_id').not().isEmpty().withMessage('Agency is required'),
   check('airshed_id').not().isEmpty().isInt().withMessage('Airshed is required'),
   check('project_acres').not().isEmpty().isInt().withMessage('Acres should be a number'),
   check('elevation_low').not().isEmpty().isInt().withMessage('Low elevation should be a number'),
   check('elevation_high').not().isEmpty().isInt().withMessage('High elevation should be a number'),
+  check('inputLat').not().isEmpty().withMessage('Enter Valid Latitude'),
+  check('inputLong').not().isEmpty().withMessage('Enter Valid Longitude'),
   check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
-  check('first_burn').not().isEmpty().withMessage('First burn date required'),
+  check('first_burn').not().isEmpty().withMessage('First burn date required'),  
   check("first_burn").matches('^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$', "i").withMessage('Date must be in YYYY-MM-DD format'),
   check('duration').not().isEmpty().isInt().withMessage('Expected burn days is required'),
   check('ignition_method').not().isEmpty().isInt().withMessage('Ignition method required'),
@@ -143,8 +148,10 @@ router.post("/projects", [
 
     //Sanitize- take any script tags out of text fields for security purposes
     req.body.project_name.param = req.sanitize(req.body.project_name.param);
-
-    //Logic to make boolean checkboxes work and some min/max elevation error handling  
+    
+    
+      
+    //Logic to make boolean checkboxes work and some error handling  
     if (req.body.class_1 === undefined) {req.body.class_1 = 0 };
     if (req.body.non_attainment === undefined) {req.body.non_attainment = 0 };
     if (req.body.de_minimis === undefined) {req.body.de_minimis = 0 };
@@ -152,8 +159,12 @@ router.post("/projects", [
     if (req.body.elevation_high > 13528) {req.body.elevation_high = 13528 };
     if (req.body.elevation_high < req.body.elevation_low) { req.body.elevation_high = req.body.elevation_low };
     if (req.body.elevation_low > req.body.elevation_high) {req.body.elevation_low = req.body.elevation_high };
-
-    //use js to create current SQL timestamp for insertion into the db  
+    if (req.body.inputLat < 0) {req.body.inputLat = 0};
+    if (req.body.inputLat > 90) {req.body.inputLat = 90};
+    if (req.body.inputLong < -180) {req.body.inputLong = -180};
+    if (req.body.inputLong > 180) {req.body.inputLong = 180};
+      
+    //use js to create curr>ent SQL timestamp for insertion into the db  
     var d = new Date();
     var sqlDate = d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
     
@@ -192,6 +203,8 @@ router.post("/projects", [
       burn_type: req.body.burn_type,
       number_of_piles: 9999, //placeholder - deprecate?
       pm_max: req.body.pm_max,
+      lat: req.body.inputLat,
+      lng: req.body.inputLong,
     };
 
     //Add new row to burn_projects table
@@ -269,11 +282,15 @@ router.get("/projects/:id", function(req, res) {
               db.query(objectivequery, req.params.id, function(error, objectives) {
                 if (error) throw error;
                 //if no error pass the burn details, reviews, objectives, and momentjs to the ejs template
+                
+                var mapPoints = geoJSON.parse(foundBurn, {Point: ['lat','lng']});  
+               
                 res.render("./projects/show", {
                   burn: foundBurn,
                   reviews: reviews,
                   moment: moment,
-                  objectives: objectives
+                  objectives: objectives,
+                  mapPoints: mapPoints
                 });
               });
             });
