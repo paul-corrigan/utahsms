@@ -4,7 +4,8 @@ select
     acres,
     agency,
     district,
-    full_name
+    full_name,
+    p.location
 from pre_burns p
 
 join agencies a on p.agency_id = a.agency_id

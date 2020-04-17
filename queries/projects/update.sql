@@ -1,6 +1,8 @@
 UPDATE burn_projects 
 SET project_acres=?,
     project_name=?,
+    lat=?,
+    lng=?,
     elevation_high=?,
     elevation_low=?,
     duration=?,

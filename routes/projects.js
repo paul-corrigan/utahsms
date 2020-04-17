@@ -339,8 +339,10 @@ router.get("/projects/:id/edit", function(req, res) {
                           // handling for SQL date to pass to template so it works in HTML date input type
                           var momentDate = moment(foundBurn[0].first_burn);
                           var truncDate = momentDate.format("YYYY-MM-DD");
+                          
                           if (error) throw error;
-                          objectives.forEach(function(objective, i){
+                          var mapPoints = geoJSON.parse(foundBurn, {Point: ['lat','lng']});  
+                            objectives.forEach(function(objective, i){
                             
                             // trying to work out some bugs on many-many update process with these console logs
                             
@@ -361,7 +363,8 @@ router.get("/projects/:id/edit", function(req, res) {
                             agencies: agencies,
                             fuelmods: fuelmods,
                             airsheds: airsheds,
-                            date: truncDate
+                            date: truncDate,
+                            mapPoints: mapPoints
                           });
                         });
                       });
@@ -387,6 +390,8 @@ router.put("/projects/:id", [
   check('project_acres').not().isEmpty().isInt().withMessage('Acres should be a number'),
   check('elevation_low').not().isEmpty().isInt().withMessage('Low elevation should be a number'),
   check('elevation_high').not().isEmpty().isInt().withMessage('High elevation should be a number'),
+  check('inputLat').not().isEmpty().withMessage('Enter Valid Latitude'),
+  check('inputLong').not().isEmpty().withMessage('Enter Valid Longitude'),  
   check('major_fbps_fuel').not().isEmpty().isInt().withMessage('Fuel type 1-13 required'),
   check('first_burn').not().isEmpty().withMessage('First burn date required'),
   check('duration').not().isEmpty().isInt().withMessage('Duration should be a number'),
@@ -438,12 +443,13 @@ router.put("/projects/:id", [
     // need to incorporate req.params.id in the WHERE clause
     var updateArray = [
       req.body.project_acres,
-      req.body.project_name.param,
-      req.body.elevation_high,
-      req.body.elevation_low,
-      req.body.duration,
-      req.body.agency_id,
-      // //implement user auth here
+       req.body.project_name.param,
+       req.body.inputLat,
+       req.body.inputLong,
+       req.body.elevation_high,
+       req.body.elevation_low,
+       req.body.duration,
+       req.body.agency_id,    // //implement user auth here
       req.body.airshed_id,
       req.body.class_1,
       req.body.non_attainment,

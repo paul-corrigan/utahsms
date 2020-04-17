@@ -1,7 +1,11 @@
 <!-- BURN PROJECT EDIT TEMPLATE -->
 
-<% include ../partials/header %>
-    
+<% include ../partials/mapheader %>
+<style>
+    #mapdiv {
+        height: 100vh;
+    }
+</style>    
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-offset-3">
@@ -76,6 +80,18 @@
                             
                             </div>
                             
+                            <hr>
+                                 <div id="mapdiv" class="form-group"></div>
+                            <hr>
+                            <div class="input-group">                        
+                                   <label for="inputLat" class="col-sm-4 col-form-label">Latitude</label>
+                                   <input class="form-control" name="inputLat" id="inputLat" value="<%=burn[0].lat%>">
+                                   
+                                   <span class="input-group-addon">       </span>
+                                    
+                                   <label for="inputLong" class="col-sm-4 col-form-label">Longitude</label>
+                                   <input class="form-control" name="inputLong" id="inputLong" value="<%=burn[0].lng%>"> 
+                                </div>
                             <hr>
                             <p class="section-head">Burn is </p>    
                             <div class="d-flex justify-content-between checkboxes">
@@ -163,11 +179,11 @@
                           
                                                         
                             <div class="d-flex justify-content-between">
-                                <button type="submit" class="btn btn-success">Submit</button>
-                                <div>
-                                <button type="button" class="btn btn-warning">Save as draft</button>
-                                </div>
-                                <a class="btn btn-danger" name="cancel" href="/projects">Cancel</a>
+                                <button type="submit" class="btn btn-success">Update</button>
+<!--                                 <div>
+                                <button type="button" class="btn btn-warning hidden">Save as draft</button>
+                                </div> -->
+                                <a class="btn btn-danger" name="cancel" href="/projects/<%= burn[0].burn_project_id%>">Cancel</a>
                             </div>
                             
                             <hr>
@@ -178,6 +194,13 @@
             </div>
         </div>
     </div>
-
+<!-- set the map to current location for editing a project-->
+<script>
+var mapCenterLat = <%=burn[0].lat%>;
+var mapCenterLng = <%=burn[0].lng%>;
+var mapZoom = 8;
+</script> 
 <script src ="/public/js/newProject.js"></script>
+<script src ="/public/js/maps/dragLatLong.js"></script>
+
 <% include ../partials/footer %>

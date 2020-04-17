@@ -6,8 +6,8 @@ var coordinates = document.getElementById('coordinates');
 var map = new mapboxgl.Map({
 container: 'mapdiv',
   style: 'mapbox://styles/pcorrigan/ck80nm4q20mr71iqj771bivp8?optimize=true',
-  center: [-111.5, 39.5],
-  zoom: 6
+  center: [mapCenterLng, mapCenterLat],
+  zoom: mapZoom
 });
 
 
@@ -19,7 +19,7 @@ var geojson = {
         'type': 'Feature',
         'geometry': {
             'type': 'Point',
-            'coordinates': [-111.5, 39.5]
+            'coordinates': [mapCenterLng, mapCenterLat]
         }
     }]
 };
